@@ -1,5 +1,5 @@
 /* eslint-disable @stylistic/no-extra-semi */
-import { useCallback, useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from 'react'
 
 type ObjectKey = string | number | symbol
 type SimpleObj = Record<string, string>
@@ -109,11 +109,8 @@ export function useStore<T extends State>(
   store: ReturnStoreType<T>,
   selector?: keyof SnapshotReturnType<typeof store>,
 ) {
-  const getSnapshot = useCallback(
-    () => store.$getSnapshot(selector),
-    [selector],
+  const data = useSyncExternalStore(store.$subscribe, () =>
+    store.$getSnapshot(selector),
   )
-
-  const data = useSyncExternalStore(store.$subscribe, getSnapshot)
   return data
 }

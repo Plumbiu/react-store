@@ -18,6 +18,6 @@ export const personStore = createStore('person', {
     return { age: this.age + 1 }
   },
   changeName() {
-    return { name: this.name + '---' }
+    return { name: this.name + '-' }
   },
 })
