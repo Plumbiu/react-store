@@ -1,0 +1,13 @@
+{
+  "extends": "@plumbiu",
+  "ignorePatterns": ["dist/**", "dist-electron"],
+  "rules": {
+    "@stylistic/array-element-newline": "off",
+    "@stylistic/implicit-arrow-linebreak": "off",
+    "@stylistic/function-paren-newline": "off",
+    "import/no-unresolved": "off",
+    "@stylistic/spaced-comment": "off",
+    "@stylistic/no-mixed-operators": "off",
+    "@stylistic/linebreak-style": "off"
+  }
+}

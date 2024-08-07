@@ -1,0 +1,23 @@
+{
+  "name": "mini-redux",
+  "version": "0.0.1",
+  "description": "Less than 1kb glob state management implement",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsup",
+    "dev:test": "pnpm -F react-store-test run dev",
+    "dev:core": "tsup --watch",
+    "dev": "npm-run-all --parallel dev:*"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@plumbiu/eslint-config": "^0.2.1",
+    "@types/node": "^22.1.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "8",
+    "npm-run-all": "^4.1.5",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4"
+  }
+}
