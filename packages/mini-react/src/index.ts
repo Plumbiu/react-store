@@ -3,16 +3,13 @@ import { useCallback, useSyncExternalStore } from 'react'
 
 type ObjectKey = string | number | symbol
 type SimpleObj = Record<string, string>
-
 interface State {
   [key: ObjectKey]: any
 }
-
 type ReturnStoreType<T extends State> = {
   $subscribe: (listener: Function) => () => void
   $getSnapshot: (selector?: keyof T) => T
 }
-
 interface Config<T extends State> {
   propsAreEqual?: (fnName: string, prevProps: T, nextProps: T) => boolean
   beforeUpdate?: (
@@ -30,7 +27,6 @@ function shallowEqual(source: SimpleObj, target: SimpleObj) {
       return false
     }
   }
-
   return true
 }
 
@@ -102,7 +98,6 @@ export function createStore<T extends State>(
 type SnapshotReturnType<T extends ReturnStoreType<State>> = ReturnType<
   T['$getSnapshot']
 >
-
 export function useStore<T extends State>(
   store: ReturnStoreType<T>,
 ): SnapshotReturnType<typeof store>
@@ -120,6 +115,5 @@ export function useStore<T extends State>(
   )
 
   const data = useSyncExternalStore(store.$subscribe, getSnapshot)
-
   return data
 }
