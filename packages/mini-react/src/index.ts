@@ -17,12 +17,8 @@ type ReturnStoreType<T, K extends keyof T> = {
 }
 
 interface Config<T> {
-  propsAreEqual?: (fnName: string, prevProps: T, nextProps: T) => boolean
-  beforeUpdate?: (
-    fnName: string,
-    prevProps: T,
-    nextProps: T,
-  ) => Partial<T> | void
+  propsAreEqual?: (fnName: string, prev: T, next: T) => boolean
+  beforeUpdate?: (fnName: string, prev: T, next: T) => Partial<T> | void
   shouldUpdate?: (fnName: string, props: T) => boolean
   afterUpdate?: (fnName: string, props: T) => void
 }
@@ -48,15 +44,12 @@ export function createStore<T extends State>(
     }
   }
 
-  const shouldUpate = config?.shouldUpdate ? config.shouldUpdate : () => true
-
   for (const key in state) {
     const fn = state[key]
     if (typeof fn !== 'function') {
       continue
     }
     const fnName = fn.name
-
     try {
       ;(state[key] as any) = (action: any) => {
         const result = fn.call(state, action) ?? {}
@@ -74,7 +67,7 @@ export function createStore<T extends State>(
         } else {
           state = assignObj
         }
-        if (!shouldUpate(fnName, state)) {
+        if (config?.shouldUpdate && config.shouldUpdate(fnName, state)) {
           return
         }
         emitChange()
@@ -85,13 +78,11 @@ export function createStore<T extends State>(
     }
   }
 
-  const $subscribe = (listener: Function) => {
-    listeners = listeners.concat(listener)
-    return () => (listeners = listeners.filter((l) => l !== listener))
-  }
-
   return {
-    $subscribe,
+    $subscribe(listener: Function) {
+      listeners = listeners.concat(listener)
+      return () => (listeners = listeners.filter((l) => l !== listener))
+    },
     $getSnapshot(selector) {
       if (selector) {
         const obj: any = {}
@@ -105,7 +96,7 @@ export function createStore<T extends State>(
   }
 }
 
-export function useStore<T extends State, K extends keyof T>(
+export function useStore<T, K extends keyof T>(
   store: ReturnStoreType<T, K>,
   selector?: K[],
 ) {
