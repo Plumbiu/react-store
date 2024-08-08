@@ -1,3 +1,4 @@
+/* eslint-disable @stylistic/indent */
 /* eslint-disable @stylistic/no-extra-semi */
 import { useSyncExternalStore } from 'react'
 
@@ -6,11 +7,16 @@ type SimpleObj = Record<string, string>
 interface State {
   [key: ObjectKey]: any
 }
-type ReturnStoreType<T extends State> = {
+type ReturnStoreType<T, K extends keyof T> = {
   $subscribe: (listener: Function) => () => void
-  $getSnapshot: (selector?: keyof T) => T
+  $getSnapshot: (selector?: K[]) => typeof selector extends undefined
+    ? T
+    : {
+        [key in K]: T[key]
+      }
 }
-interface Config<T extends State> {
+
+interface Config<T> {
   propsAreEqual?: (fnName: string, prevProps: T, nextProps: T) => boolean
   beforeUpdate?: (
     fnName: string,
@@ -23,7 +29,7 @@ interface Config<T extends State> {
 
 function shallowEqual(source: SimpleObj, target: SimpleObj) {
   for (const key in target) {
-    if (source[key] !== target[key]) {
+    if (!Object.is(source[key], target[key])) {
       return false
     }
   }
@@ -34,7 +40,7 @@ export function createStore<T extends State>(
   name: string | Symbol,
   state: T,
   config?: Config<T>,
-): ReturnStoreType<typeof state> {
+): ReturnStoreType<T, keyof T> {
   let listeners: Function[] = []
   function emitChange() {
     for (let i = 0; i < listeners.length; i++) {
@@ -86,28 +92,22 @@ export function createStore<T extends State>(
 
   return {
     $subscribe,
-    $getSnapshot(selector?: keyof typeof state) {
+    $getSnapshot(selector) {
       if (selector) {
-        return state[selector]
+        const obj: any = {}
+        for (const key in selector) {
+          obj[key] = state[key]
+        }
+        return obj
       }
       return state
     },
   }
 }
 
-type SnapshotReturnType<T extends ReturnStoreType<State>> = ReturnType<
-  T['$getSnapshot']
->
-export function useStore<T extends State>(
-  store: ReturnStoreType<T>,
-): SnapshotReturnType<typeof store>
-export function useStore<T extends State, U extends keyof T>(
-  store: ReturnStoreType<T>,
-  selector: U,
-): SnapshotReturnType<typeof store>[U]
-export function useStore<T extends State>(
-  store: ReturnStoreType<T>,
-  selector?: keyof SnapshotReturnType<typeof store>,
+export function useStore<T extends State, K extends keyof T>(
+  store: ReturnStoreType<T, K>,
+  selector?: K[],
 ) {
   const data = useSyncExternalStore(store.$subscribe, () =>
     store.$getSnapshot(selector),
