@@ -1,6 +1,6 @@
 {
   "name": "@plumbiu/react-store",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Less than 1kb global state management implement",
   "main": "dist/index.js",
   "files": [
