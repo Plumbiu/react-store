@@ -44,7 +44,7 @@ export default function App() {
 // Bad some Times
 const { count } = useStore(countStore)
 // GOOD
-const count = useStore(countStore, ['count'])
+const count = useStore(countStore, 'count')
 ```
 
 **一个 Store 同时存储着 `age` 和 `name` 两个属性**
@@ -80,8 +80,7 @@ function Child() {
 }
 
 export default function App() {
-  // 如果
-  const name = useStore(personStore, ['name'])
+  const name = useStore(personStore, 'name')
   return (
     <>
       <div>name: {name}</div>

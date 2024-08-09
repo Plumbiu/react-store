@@ -2,18 +2,12 @@
 /* eslint-disable @stylistic/no-extra-semi */
 import { useSyncExternalStore } from 'react'
 
-type ObjectKey = string | number | symbol
-type SimpleObj = Record<string, string>
 interface State {
-  [key: ObjectKey]: any
+  [key: string | number | symbol]: any
 }
-type ReturnStoreType<T, K extends keyof T> = {
+type ReturnStoreType<T> = {
   $subscribe: (listener: Function) => () => void
-  $getSnapshot: (selector?: K[]) => typeof selector extends undefined
-    ? T
-    : {
-        [key in K]: T[key]
-      }
+  $getSnapshot: (selector?: keyof T) => T
 }
 
 interface Config<T> {
@@ -23,7 +17,7 @@ interface Config<T> {
   afterUpdate?: (fnName: string, props: T) => void
 }
 
-function shallowEqual(source: SimpleObj, target: SimpleObj) {
+function shallowEqual(source: State, target: State) {
   for (const key in target) {
     if (!Object.is(source[key], target[key])) {
       return false
@@ -36,7 +30,7 @@ export function createStore<T extends State>(
   name: string | Symbol,
   state: T,
   config?: Config<T>,
-): ReturnStoreType<T, keyof T> {
+): ReturnStoreType<T> {
   let listeners: Function[] = []
   function emitChange() {
     for (let i = 0; i < listeners.length; i++) {
@@ -52,21 +46,16 @@ export function createStore<T extends State>(
     const fnName = fn.name
     try {
       ;(state[key] as any) = (action: any) => {
-        const result = fn.call(state, action) ?? {}
-
-        if (shallowEqual(state, result)) {
+        const origin = fn.call(state, action) ?? {}
+        if (shallowEqual(state, origin)) {
           return
         }
-        const assignObj = { ...state, ...result }
-        if (config?.propsAreEqual?.(fnName, result, assignObj)) {
+        const assigned = { ...state, ...origin }
+        if (config?.propsAreEqual?.(fnName, origin, assigned)) {
           return
         }
-        const updatedResult = config?.beforeUpdate?.(fnName, state, assignObj)
-        if (updatedResult) {
-          state = { ...state, ...updatedResult }
-        } else {
-          state = assignObj
-        }
+        const updated = config?.beforeUpdate?.(fnName, state, assigned)
+        state = updated == null ? assigned : { ...state, ...updated }
         if (config?.shouldUpdate && config.shouldUpdate(fnName, state)) {
           return
         }
@@ -84,21 +73,24 @@ export function createStore<T extends State>(
       return () => (listeners = listeners.filter((l) => l !== listener))
     },
     $getSnapshot(selector) {
-      if (selector) {
-        const obj: any = {}
-        for (const key in selector) {
-          obj[key] = state[key]
-        }
-        return obj
+      if (!selector) {
+        return state
       }
-      return state
+      return state[selector]
     },
   }
 }
 
 export function useStore<T, K extends keyof T>(
-  store: ReturnStoreType<T, K>,
-  selector?: K[],
+  store: ReturnStoreType<T>,
+): ReturnType<ReturnStoreType<T>['$getSnapshot']>
+export function useStore<T, K extends keyof T>(
+  store: ReturnStoreType<T>,
+  selector: K,
+): ReturnType<ReturnStoreType<T>['$getSnapshot']>[K]
+export function useStore<T, K extends keyof T>(
+  store: ReturnStoreType<T>,
+  selector?: K,
 ) {
   const data = useSyncExternalStore(store.$subscribe, () =>
     store.$getSnapshot(selector),

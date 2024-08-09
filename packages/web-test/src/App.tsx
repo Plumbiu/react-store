@@ -13,11 +13,11 @@ function Child() {
 }
 
 export default function App() {
-  const { age } = useStore(personStore, ['name', 'age'])
+  const name = useStore(personStore, 'name')
   console.log('re-render')
   return (
     <>
-      <div>age: {age}</div>
+      <div>name: {name}</div>
       <Child />
     </>
   )
