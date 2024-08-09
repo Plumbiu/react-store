@@ -26,7 +26,6 @@ function shallowEqual(source: State, target: State) {
 }
 
 export function createStore<T extends State>(
-  name: string | Symbol,
   state: T,
   config?: Config<T>,
 ): ReturnStoreType<T> {
@@ -42,25 +41,21 @@ export function createStore<T extends State>(
     if (typeof fn !== 'function') {
       continue
     }
-    try {
-      ;(state[key] as any) = (action: any) => {
-        const origin = fn.call(state, action) ?? {}
-        if (shallowEqual(state, origin)) {
-          return
-        }
-        const assigned = { ...state, ...origin }
-        if (config?.propsAreEqual?.(state, assigned)) {
-          return
-        }
-        state = assigned
-        if (config?.shouldUpdate && !config.shouldUpdate(state)) {
-          return
-        }
-        emitChange()
-        config?.afterUpdate?.(state)
+    ;(state[key] as any) = (action: any) => {
+      const origin = fn.call(state, action) ?? {}
+      if (shallowEqual(state, origin)) {
+        return
       }
-    } catch (error: any) {
-      console.error(`Error: ${name}\n${error.message}`)
+      const assigned = { ...state, ...origin }
+      if (config?.propsAreEqual?.(state, assigned)) {
+        return
+      }
+      state = assigned
+      if (config?.shouldUpdate && !config.shouldUpdate(state)) {
+        return
+      }
+      emitChange()
+      config?.afterUpdate?.(state)
     }
   }
 

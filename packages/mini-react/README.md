@@ -11,7 +11,7 @@
 ```ts
 import { createStore } from '@plumbiu/react-store'
 
-export const countStore = createStore('person', {
+export const countStore = createStore({
   count: 15,
   inc() {
     return { count: this.count + 1 }
@@ -51,7 +51,7 @@ const count = useStore(countStore, 'count')
 
 ```ts
 import { createStore } from '@plumbiu/react-store'
-export const personStore = createStore('person', {
+export const personStore = createStore({
   age: 21,
   name: 'foo',
   changeAge() {
@@ -115,7 +115,6 @@ interface Config<T> {
 
 ```tsx
 const numStore = createStore(
-  'num',
   {
     num: 2,
     inc() {
