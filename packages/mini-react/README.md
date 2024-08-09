@@ -98,24 +98,18 @@ export default function App() {
 interface State {
   [key: ObjectKey]: any
 }
-interface Config<T extends State> {
-  propsAreEqual?: (fnName: string, prevProps: T, nextProps: T) => boolean
-  beforeUpdate?: (
-    fnName: string,
-    prevProps: T,
-    nextProps: T,
-  ) => Partial<T> | void
-  shouldUpdate?: (fnName: string, props: T) => boolean
-  afterUpdate?: (fnName: string, props: T) => void
+interface Config<T> {
+  propsAreEqual?: (prevState: T, nextState: T) => boolean
+  shouldUpdate?: (state: T) => boolean
+  afterUpdate?: (state: T) => void
 }
 ```
 
 生命周期按照顺序：
 
 - `propsAreEqual`：两个 `props` 是否相等，如果返回 `true`，那么该函数什么都不会做（包括数据更新和重新渲染）
-- `beforeUpate`：在数据更新之前调用，它可以返回一个值，用于代替合并的数据（即函数本身返回的值和之前数据合并的值）
-- `shouldUpdate`：数据已经合并，代表是否重新渲染
-- `afterUpdate`：数据已经合并，并且已经重新渲染完成
+- `shouldUpdate`：是否重新渲染
+- `afterUpdate`：已经重新渲染完成
 
 举一个简单的例子：只渲染偶数
 

@@ -11,10 +11,9 @@ type ReturnStoreType<T> = {
 }
 
 interface Config<T> {
-  propsAreEqual?: (fnName: string, prev: T, next: T) => boolean
-  beforeUpdate?: (fnName: string, prev: T, next: T) => Partial<T> | void
-  shouldUpdate?: (fnName: string, props: T) => boolean
-  afterUpdate?: (fnName: string, props: T) => void
+  propsAreEqual?: (prevState: T, nextState: T) => boolean
+  shouldUpdate?: (state: T) => boolean
+  afterUpdate?: (state: T) => void
 }
 
 function shallowEqual(source: State, target: State) {
@@ -43,7 +42,6 @@ export function createStore<T extends State>(
     if (typeof fn !== 'function') {
       continue
     }
-    const fnName = fn.name
     try {
       ;(state[key] as any) = (action: any) => {
         const origin = fn.call(state, action) ?? {}
@@ -51,19 +49,18 @@ export function createStore<T extends State>(
           return
         }
         const assigned = { ...state, ...origin }
-        if (config?.propsAreEqual?.(fnName, origin, assigned)) {
+        if (config?.propsAreEqual?.(state, assigned)) {
           return
         }
-        const updated = config?.beforeUpdate?.(fnName, state, assigned)
-        state = updated == null ? assigned : { ...state, ...updated }
-        if (config?.shouldUpdate && !config.shouldUpdate(fnName, state)) {
+        state = assigned
+        if (config?.shouldUpdate && !config.shouldUpdate(state)) {
           return
         }
         emitChange()
-        config?.afterUpdate?.(fnName, state)
+        config?.afterUpdate?.(state)
       }
-    } catch (error) {
-      console.error(`Error: ${name}-${fnName}`)
+    } catch (error: any) {
+      console.error(`Error: ${name}\n${error.message}`)
     }
   }
 
