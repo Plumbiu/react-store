@@ -1,6 +1,6 @@
 import { createStore } from '@plumbiu/react-store'
 
-export const test = createStore('test', {
+export const test = createStore({
   name: 'fasd',
   count: 1,
   inc() {
@@ -11,7 +11,7 @@ export const test = createStore('test', {
   },
 })
 
-export const personStore = createStore('person', {
+export const personStore = createStore({
   age: 21,
   name: 'foo',
   changeAge() {
