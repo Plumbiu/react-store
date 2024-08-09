@@ -56,7 +56,7 @@ export function createStore<T extends State>(
         }
         const updated = config?.beforeUpdate?.(fnName, state, assigned)
         state = updated == null ? assigned : { ...state, ...updated }
-        if (config?.shouldUpdate && config.shouldUpdate(fnName, state)) {
+        if (config?.shouldUpdate && !config.shouldUpdate(fnName, state)) {
           return
         }
         emitChange()
