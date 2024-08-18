@@ -25,37 +25,59 @@ function shallowEqual(source: State, target: State) {
   return true
 }
 
+function emitChange(listeners: Function[]) {
+  for (let i = 0; i < listeners.length; i++) {
+    listeners[i]()
+  }
+}
+const AsyncFunction = async function () {}.constructor
+
+function afterCall<T extends State>(
+  state: T,
+  config: Config<T> | undefined,
+  origin: any,
+  listeners: Function[],
+  cb: (assigned: T) => void,
+) {
+  if (shallowEqual(state, origin)) {
+    return
+  }
+  const assigned = { ...state, ...origin }
+  if (config?.propsAreEqual?.(state, assigned)) {
+    return
+  }
+  cb(assigned)
+  if (config?.shouldUpdate && !config.shouldUpdate(assigned)) {
+    return
+  }
+  emitChange(listeners)
+  config?.afterUpdate?.(assigned)
+}
+
 export function createStore<T extends State>(
   state: T,
   config?: Config<T>,
 ): ReturnStoreType<T> {
   let listeners: Function[] = []
-  function emitChange() {
-    for (let i = 0; i < listeners.length; i++) {
-      listeners[i]()
-    }
-  }
 
+  const cb = (assigned: T) => {
+    state = assigned
+  }
   for (const key in state) {
-    const fn = state[key]
+    let fn = state[key]
     if (typeof fn !== 'function') {
       continue
     }
-    ;(state[key] as any) = (action: any) => {
-      const origin = fn.call(state, action) ?? {}
-      if (shallowEqual(state, origin)) {
-        return
+    if (fn.constructor === AsyncFunction) {
+      ;(state[key] as any) = async (action: any) => {
+        const origin = (await fn.call(state, action)) ?? {}
+        afterCall(state, config, origin, listeners, cb)
       }
-      const assigned = { ...state, ...origin }
-      if (config?.propsAreEqual?.(state, assigned)) {
-        return
+    } else {
+      ;(state[key] as any) = (action: any) => {
+        const origin = fn.call(state, action) ?? {}
+        afterCall(state, config, origin, listeners, cb)
       }
-      state = assigned
-      if (config?.shouldUpdate && !config.shouldUpdate(state)) {
-        return
-      }
-      emitChange()
-      config?.afterUpdate?.(state)
     }
   }
 
@@ -83,9 +105,12 @@ export function useStore<T, K extends keyof T>(
 export function useStore<T, K extends keyof T>(
   store: ReturnStoreType<T>,
   selector?: K,
+  getServerSnapshot?: () => T,
 ) {
-  const data = useSyncExternalStore(store.$subscribe, () =>
-    store.$getSnapshot(selector),
+  const data = useSyncExternalStore(
+    store.$subscribe,
+    () => store.$getSnapshot(selector),
+    getServerSnapshot,
   )
   return data
 }
