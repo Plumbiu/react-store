@@ -6,8 +6,8 @@ interface State {
   [key: string | number | symbol]: any
 }
 type ReturnStoreType<T> = {
-  $subscribe: (listener: Function) => () => void
-  $getSnapshot: (selector?: keyof T) => T
+  $s: (listener: Function) => () => void
+  $g: (selector?: keyof T) => T
 }
 
 interface Config<T> {
@@ -82,11 +82,11 @@ export function createStore<T extends State>(
   }
 
   return {
-    $subscribe(listener: Function) {
+    $s(listener: Function) {
       listeners = listeners.concat(listener)
       return () => (listeners = listeners.filter((l) => l !== listener))
     },
-    $getSnapshot(selector) {
+    $g(selector) {
       if (!selector) {
         return state
       }
@@ -97,19 +97,19 @@ export function createStore<T extends State>(
 
 export function useStore<T, K extends keyof T>(
   store: ReturnStoreType<T>,
-): ReturnType<ReturnStoreType<T>['$getSnapshot']>
+): ReturnType<ReturnStoreType<T>['$g']>
 export function useStore<T, K extends keyof T>(
   store: ReturnStoreType<T>,
   selector: K,
-): ReturnType<ReturnStoreType<T>['$getSnapshot']>[K]
+): ReturnType<ReturnStoreType<T>['$g']>[K]
 export function useStore<T, K extends keyof T>(
   store: ReturnStoreType<T>,
   selector?: K,
   getServerSnapshot?: () => T,
 ) {
   const data = useSyncExternalStore(
-    store.$subscribe,
-    () => store.$getSnapshot(selector),
+    store.$s,
+    () => store.$g(selector),
     getServerSnapshot,
   )
   return data
