@@ -10,4 +10,5 @@ export default defineConfig({
   minify: true,
   dts: true,
   external: ['react'],
+  sourcemap: true,
 })
