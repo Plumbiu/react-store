@@ -3,10 +3,10 @@ import { createStore } from '@plumbiu/react-store'
 export const personStore = createStore({
   age: 21,
   name: 'foo',
-  async changeAge() {
-    return { age: this.age + 1 }
+  async changeAge(age: number) {
+    this.$set({ age })
   },
   changeName() {
-    return { name: this.name + '-' }
+    this.$set({ name: this.name + '-' })
   },
 })

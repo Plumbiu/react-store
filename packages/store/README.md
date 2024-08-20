@@ -14,7 +14,7 @@ import { createStore } from '@plumbiu/react-store'
 export const countStore = createStore({
   count: 15,
   inc() {
-    return { count: this.count + 1 }
+    this.$set({ count: this.count + 1 })
   },
 })
 ```
@@ -55,10 +55,10 @@ export const personStore = createStore({
   age: 21,
   name: 'foo',
   changeAge() {
-    return { age: this.age + 1 }
+    this.$set({ age: this.age + 1 })
   },
   changeName() {
-    return { name: this.name + '---' }
+    this.$set({ name: this.name + '---' })
   },
 })
 ```
@@ -118,9 +118,7 @@ const numStore = createStore(
   {
     num: 2,
     inc() {
-      return {
-        num: this.num + 1,
-      }
+      this.$set({ num: this.num + 1 })
     },
   },
   {

@@ -3,10 +3,11 @@ import { personStore } from './store'
 
 function Child() {
   const data = useStore(personStore)
+
   return (
     <>
       <div>age: {data.age}</div>
-      <button onClick={data.changeAge}>change age</button>
+      <button onClick={() => data.changeAge(data.age + 1)}>change age</button>
       <button onClick={data.changeName}>change name</button>
     </>
   )

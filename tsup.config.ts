@@ -1,9 +1,9 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: ['packages/mini-react/src/index.ts'],
+  entry: ['packages/store/src/index.ts'],
   splitting: true,
-  outDir: 'packages/mini-react/dist',
+  outDir: 'packages/store/dist',
   format: ['esm', 'cjs'],
   clean: true,
   bundle: true,
