@@ -2,6 +2,7 @@
 /* eslint-disable @stylistic/no-extra-semi */
 import { useSyncExternalStore } from 'react'
 
+type Listeners = Set<Function>
 interface State {
   [key: string | number | symbol]: any
 }
@@ -25,17 +26,11 @@ function isEqual(source: State, target: State) {
   return true
 }
 
-function emitChange(listeners: Function[]) {
-  for (let i = 0; i < listeners.length; i++) {
-    listeners[i]()
-  }
-}
-
 export function createStore<T extends State>(
   state: T & ThisType<T & { $set: (state: Partial<T>) => void }>,
   config?: Config<T>,
 ): ReturnStoreType<T> {
-  let listeners: Function[] = []
+  const listeners: Listeners = new Set()
   function set(origin: Partial<T>) {
     if (isEqual(origin, state)) {
       return
@@ -45,11 +40,10 @@ export function createStore<T extends State>(
       return
     }
     state = assigned
-
     if (config?.shouldUpdate && !config.shouldUpdate(assigned)) {
       return
     }
-    emitChange(listeners)
+    listeners.forEach((fn) => fn())
     config?.afterUpdate?.(assigned)
   }
 
@@ -62,15 +56,12 @@ export function createStore<T extends State>(
   }
 
   return [
-    (listener: Function) => {
-      listeners = listeners.concat(listener)
-      return () => (listeners = listeners.filter((l) => l !== listener))
+    (listener) => {
+      listeners.add(listener)
+      return () => listeners.delete(listener)
     },
     (selector) => {
-      if (!selector) {
-        return state
-      }
-      return state[selector]
+      return selector ? state : state[selector!]
     },
   ]
 }
