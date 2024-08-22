@@ -61,7 +61,7 @@ export function createStore<T extends State>(
       return () => listeners.delete(listener)
     },
     (selector) => {
-      return selector ? state : state[selector!]
+      return selector ? state[selector] : state
     },
   ]
 }

@@ -4,6 +4,8 @@ import { personStore } from './store'
 function Child() {
   const data = useStore(personStore)
 
+  console.log(data)
+
   return (
     <>
       <div>age: {data.age}</div>
