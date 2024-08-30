@@ -13,7 +13,7 @@ type ReturnStoreType<T> = [
 ]
 
 export interface Config<T> {
-  setup?: () => T | null | undefined
+  setup?: (state: T) => void
   propsAreEqual?: (prevState: T, nextState: T) => boolean
   shouldUpdate?: (state: T) => boolean
   afterUpdate?: (state: T) => void
@@ -33,12 +33,7 @@ export function createStore<T extends State>(
   config?: Config<T>,
 ): ReturnStoreType<T> {
   const listeners: Listeners = new Set()
-  if (config?.setup) {
-    const data = config.setup()
-    if (data) {
-      state = Object.assign({}, state, data)
-    }
-  }
+  config?.setup?.(state)
   function set(origin: Partial<T>) {
     if (isEqual(origin, state)) {
       return

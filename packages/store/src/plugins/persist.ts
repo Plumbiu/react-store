@@ -14,7 +14,7 @@ function persistPlugin<T = any>(config: PersistConfig): Config<T> {
   const { age = 30000, key } = config
 
   return {
-    setup() {
+    setup(state) {
       let store: string | null | Store<T> = localStorage.getItem(key)
       if (store === null) {
         return
@@ -22,10 +22,12 @@ function persistPlugin<T = any>(config: PersistConfig): Config<T> {
       store = JSON.parse(store) as Store<T>
       const now = Date.now()
       if (now - store.lastModified > age) {
-        return null
+        return
       }
 
-      return store.data
+      for (const key in store.data) {
+        state[key] = store.data[key]
+      }
     },
     afterUpdate(state) {
       localStorage.setItem(
