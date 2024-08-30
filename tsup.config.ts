@@ -7,7 +7,7 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   clean: true,
   bundle: true,
-  minify: true,
+  minify: 'terser',
   dts: true,
   external: ['react'],
 })
