@@ -1,12 +1,15 @@
-import { createStore } from '@plumbiu/react-store'
+import { createStore, persistPlugin } from '@plumbiu/react-store'
 
-export const personStore = createStore({
-  age: 21,
-  name: 'foo',
-  async changeAge(age: number) {
-    this.$set({ age: age })
+export const personStore = createStore(
+  {
+    age: 21,
+    name: 'foo',
+    async changeAge(age: number) {
+      this.$set({ age: age })
+    },
+    changeName() {
+      this.$set({ name: this.name + '-' })
+    },
   },
-  changeName() {
-    this.$set({ name: this.name + '-' })
-  },
-})
+  persistPlugin({ key: 'person' }),
+)

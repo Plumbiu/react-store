@@ -1,6 +1,7 @@
 /* eslint-disable @stylistic/indent */
 /* eslint-disable @stylistic/no-extra-semi */
 import { useSyncExternalStore } from 'react'
+import persist from './plugins/persist'
 
 type Listeners = Set<Function>
 interface State {
@@ -11,7 +12,8 @@ type ReturnStoreType<T> = [
   (selector?: keyof T) => T,
 ]
 
-interface Config<T> {
+export interface Config<T> {
+  setup?: () => T | null | undefined
   propsAreEqual?: (prevState: T, nextState: T) => boolean
   shouldUpdate?: (state: T) => boolean
   afterUpdate?: (state: T) => void
@@ -31,6 +33,12 @@ export function createStore<T extends State>(
   config?: Config<T>,
 ): ReturnStoreType<T> {
   const listeners: Listeners = new Set()
+  if (config?.setup) {
+    const data = config.setup()
+    if (data) {
+      state = Object.assign({}, state, data)
+    }
+  }
   function set(origin: Partial<T>) {
     if (isEqual(origin, state)) {
       return
@@ -85,3 +93,5 @@ export function useStore<T, K extends keyof T>(
   )
   return data
 }
+
+export const persistPlugin = persist
