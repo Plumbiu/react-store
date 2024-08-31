@@ -1,7 +1,12 @@
+import path from 'node:path'
 import { defineConfig } from 'tsup'
 
+const pkgPath = 'packages/store/src'
+
 export default defineConfig({
-  entry: ['packages/store/src/index.ts'],
+  entry: {
+    index: path.join(pkgPath, 'index.ts'),
+  },
   splitting: true,
   outDir: 'packages/store/dist',
   format: ['esm', 'cjs'],

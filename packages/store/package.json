@@ -12,13 +12,35 @@
     "store"
   ],
   "exports": {
-    "import": {
-      "default": "./dist/index.mjs",
-      "types": "./dist/index.d.mts"
+    ".": {
+      "import": {
+        "default": "./dist/index.mjs",
+        "types": "./dist/index.d.mts"
+      },
+      "require": {
+        "default": "./dist/index.js",
+        "types": "./dist/index.d.ts"
+      }
     },
-    "require": {
-      "default": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+    "./plugins": {
+      "import": {
+        "types": "./dist/plugins.d.mts",
+        "default": "./dist/plugins.mjs"
+      },
+      "require": {
+        "types": "./dist/plugins.d.ts",
+        "default": "./dist/plugins.js"
+      }
+    },
+    "./shallow": {
+      "import": {
+        "types": "./dist/shallow.d.mts",
+        "default": "./dist/shallow.mjs"
+      },
+      "require": {
+        "types": "./dist/shallow.d.ts",
+        "default": "./dist/shallow.js"
+      }
     }
   },
   "author": "Plumbiu",

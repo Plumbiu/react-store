@@ -8,6 +8,7 @@
     "import/no-unresolved": "off",
     "@stylistic/spaced-comment": "off",
     "@stylistic/no-mixed-operators": "off",
-    "@stylistic/linebreak-style": "off"
+    "@stylistic/linebreak-style": "off",
+    "@stylistic/no-extra-semi": "off"
   }
 }
