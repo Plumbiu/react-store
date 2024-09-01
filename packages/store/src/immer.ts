@@ -3,9 +3,9 @@ import { Draft, produce } from 'immer'
 import type { Listeners, Plugin, ReturnStoreType, State } from './types'
 import { modifyState } from './utils'
 
-export function createImmerStore<T extends State, P extends Plugin<T>>(
+export function createImmerStore<T extends State>(
   state: T & ThisType<T & { $set: (cb: (draft: Draft<T>) => void) => void }>,
-  plugin?: P,
+  plugin?: Plugin<any>,
 ): ReturnStoreType<T> {
   const listeners: Listeners = new Set()
   plugin?.setup?.(state)

@@ -1,14 +1,14 @@
 /* eslint-disable @stylistic/semi-style */
 /* eslint-disable @stylistic/indent */
 import { useSyncExternalStore } from 'react'
-import { Plugin, Listeners, ReturnStoreType, State } from './types'
+import { Listeners, Plugin, ReturnStoreType, State } from './types'
 import { modifyState } from './utils'
 
 type Set<T extends State> = (state: Partial<T>) => void
 
-export function createStore<T extends State, P extends Plugin<T>>(
+export function createStore<T extends State>(
   state: T & ThisType<T & { $set: Set<T> }>,
-  plugin?: P,
+  plugin?: Plugin<any>,
 ): ReturnStoreType<T> {
   const listeners: Listeners = new Set()
   plugin?.setup?.(state)

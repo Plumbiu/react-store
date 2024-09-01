@@ -7,7 +7,7 @@ export type ReturnStoreType<T> = [
   (selector?: keyof T) => T,
 ]
 
-export interface Plugin<T> {
+export interface Plugin<T extends State> {
   setup?: (state: T) => void
   propsAreEqual?: (prevState: T, nextState: T) => boolean
   shouldUpdate?: (state: T) => boolean
