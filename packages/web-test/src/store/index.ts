@@ -1,4 +1,5 @@
-import { createStore, persistPlugin } from '@plumbiu/react-store'
+import { createStore } from '@plumbiu/react-store'
+import { persistPlugin } from '@plumbiu/react-store/plugins'
 
 export const personStore = createStore(
   {
