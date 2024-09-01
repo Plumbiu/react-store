@@ -1,4 +1,5 @@
 export * from './react'
+export * from './immer'
 export * from './plugins/index'
 export type { Plugin } from './types'
 export { composePlugin } from './utils'

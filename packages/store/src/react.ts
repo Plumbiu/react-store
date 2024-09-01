@@ -2,33 +2,26 @@
 /* eslint-disable @stylistic/indent */
 import { useSyncExternalStore } from 'react'
 import { Plugin, Listeners, ReturnStoreType, State } from './types'
-import { isEqual } from './utils'
+import { modifyState } from './utils'
 
 type Set<T extends State> = (state: Partial<T>) => void
 
-export function createStore<T extends State>(
+export function createStore<T extends State, P extends Plugin<T>>(
   state: T & ThisType<T & { $set: Set<T> }>,
-  plugin?: Plugin<T>,
+  plugin?: P,
 ): ReturnStoreType<T> {
   const listeners: Listeners = new Set()
   plugin?.setup?.(state)
-  const set: Set<T> = (origin) => {
-    if (isEqual(origin, state)) {
-      return
-    }
+  ;(state as any).$set = (origin: Partial<T>) => {
     const assigned = Object.assign({}, state, origin)
-    if (plugin?.propsAreEqual?.(state, assigned)) {
-      return
-    }
-    state = assigned
-    if (plugin?.shouldUpdate && !plugin.shouldUpdate(assigned)) {
-      return
-    }
-    listeners.forEach((fn) => fn())
-    plugin?.afterUpdate?.(assigned)
+    modifyState({
+      assigned,
+      listeners,
+      state,
+      mergedCallback: () => (state = assigned),
+      origin,
+    })
   }
-
-  ;(state as any).$set = set
   for (const key in state) {
     let fn = state[key]
     if (typeof fn === 'function') {

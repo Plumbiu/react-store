@@ -1,6 +1,6 @@
 import { useStore, createStore, persist } from '@plumbiu/react-store'
 
-export const personStore = createStore(
+const personStore = createStore(
   {
     age: 21,
     name: 'foo',
@@ -31,6 +31,7 @@ export default function Basic() {
   return (
     <>
       <div>name: {name}</div>
+      <h4>Child</h4>
       <Child />
     </>
   )

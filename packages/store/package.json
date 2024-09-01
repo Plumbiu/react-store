@@ -1,6 +1,7 @@
 {
   "name": "@plumbiu/react-store",
-  "main": "dist/index.js",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "files": [
     "dist"
   ],

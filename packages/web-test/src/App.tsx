@@ -1,5 +1,5 @@
 import Basic from './components/Basic'
-import Immer from './components/Immer'
+import Immer from './components/ImmerStore'
 
 const components = {
   basic: <Basic />,
