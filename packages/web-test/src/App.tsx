@@ -1,27 +1,18 @@
-import { useStore } from '@plumbiu/react-store'
-import { personStore } from './store'
+import Basic from './components/Basic'
+import Immer from './components/Immer'
 
-function Child() {
-  const data = useStore(personStore)
-
-  console.log(data)
-
-  return (
-    <>
-      <div>age: {data.age}</div>
-      <button onClick={() => data.changeAge(data.age + 1)}>change age</button>
-      <button onClick={data.changeName}>change name</button>
-    </>
-  )
+const components = {
+  basic: <Basic />,
+  immer: <Immer />,
 }
 
 export default function App() {
-  const name = useStore(personStore, 'name')
-  console.log('re-render')
-  return (
-    <>
-      <div>name: {name}</div>
-      <Child />
-    </>
-  )
+  return Object.entries(components).map(([key, cmp]) => {
+    return (
+      <div key={key}>
+        <h1>{key}</h1>
+        {cmp}
+      </div>
+    )
+  })
 }

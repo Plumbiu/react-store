@@ -19,19 +19,12 @@
         "default": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
-    },
-    "./plugins": {
-      "import": {
-        "types": "./dist/plugins.d.mts",
-        "default": "./dist/plugins.mjs"
-      },
-      "require": {
-        "types": "./dist/plugins.d.ts",
-        "default": "./dist/plugins.js"
-      }
     }
   },
   "author": "Plumbiu",
+  "dependencies": {
+    "immer": "^10.1.1"
+  },
   "license": "MIT",
   "peerDependencies": {
     "react": "^18"

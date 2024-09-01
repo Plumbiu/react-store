@@ -10,12 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@plumbiu/react-store": "workspace:^",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "@plumbiu/react-store": "workspace:^"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react-swc": "^3.5.0",
+    "immer": "^10.1.1",
     "typescript": "^5.2.2",
     "vite": "^5.3.4"
   }

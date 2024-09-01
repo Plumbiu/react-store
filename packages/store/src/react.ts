@@ -1,15 +1,18 @@
+/* eslint-disable @stylistic/semi-style */
 /* eslint-disable @stylistic/indent */
 import { useSyncExternalStore } from 'react'
 import { Plugin, Listeners, ReturnStoreType, State } from './types'
 import { isEqual } from './utils'
 
+type Set<T extends State> = (state: Partial<T>) => void
+
 export function createStore<T extends State>(
-  state: T & ThisType<T & { $set: (state: Partial<T>) => void }>,
+  state: T & ThisType<T & { $set: Set<T> }>,
   plugin?: Plugin<T>,
 ): ReturnStoreType<T> {
   const listeners: Listeners = new Set()
   plugin?.setup?.(state)
-  function set(origin: Partial<T>) {
+  const set: Set<T> = (origin) => {
     if (isEqual(origin, state)) {
       return
     }
@@ -17,11 +20,7 @@ export function createStore<T extends State>(
     if (plugin?.propsAreEqual?.(state, assigned)) {
       return
     }
-    if (plugin?.modifyState) {
-      plugin?.modifyState(state)
-    } else {
-      state = assigned
-    }
+    state = assigned
     if (plugin?.shouldUpdate && !plugin.shouldUpdate(assigned)) {
       return
     }

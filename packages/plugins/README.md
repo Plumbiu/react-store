@@ -1,1 +1,0 @@
-# @plumbiu/react-store/plugin
