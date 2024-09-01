@@ -9,13 +9,13 @@ export function isEqual(source: State, target: State) {
   return true
 }
 
-export function composePlugins<T extends State>(
-  configs?: Plugin<T>[],
+export function composePlugin<T extends State>(
+  plugins?: Plugin<T>[],
 ): Plugin<T> {
-  if (!configs) {
+  if (!plugins) {
     return {}
   }
-  return configs.reduce((prev, curr) => {
+  return plugins.reduce((prev, curr) => {
     return {
       setup(...args) {
         prev.setup?.(...args)

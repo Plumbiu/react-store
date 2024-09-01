@@ -1,29 +1,32 @@
 /* eslint-disable @stylistic/indent */
 import { useSyncExternalStore } from 'react'
 import { Plugin, Listeners, ReturnStoreType, State } from './types'
-import { composePlugins, isEqual } from './utils'
+import { isEqual } from './utils'
 
 export function createStore<T extends State>(
   state: T & ThisType<T & { $set: (state: Partial<T>) => void }>,
-  plugins?: Plugin<T>[],
+  plugin?: Plugin<T>,
 ): ReturnStoreType<T> {
   const listeners: Listeners = new Set()
-  const config = composePlugins(plugins)
-  config?.setup?.(state)
+  plugin?.setup?.(state)
   function set(origin: Partial<T>) {
     if (isEqual(origin, state)) {
       return
     }
     const assigned = Object.assign({}, state, origin)
-    if (config?.propsAreEqual?.(state, assigned)) {
+    if (plugin?.propsAreEqual?.(state, assigned)) {
       return
     }
-    state = assigned
-    if (config?.shouldUpdate && !config.shouldUpdate(assigned)) {
+    if (plugin?.modifyState) {
+      plugin?.modifyState(state)
+    } else {
+      state = assigned
+    }
+    if (plugin?.shouldUpdate && !plugin.shouldUpdate(assigned)) {
       return
     }
     listeners.forEach((fn) => fn())
-    config?.afterUpdate?.(assigned)
+    plugin?.afterUpdate?.(assigned)
   }
 
   ;(state as any).$set = set
