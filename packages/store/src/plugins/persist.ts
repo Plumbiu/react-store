@@ -1,4 +1,4 @@
-import { Config } from '../types'
+import { Plugin } from '../types'
 
 interface PersistConfig {
   key: string
@@ -10,7 +10,7 @@ interface Store<T> {
   data: T
 }
 
-function persistPlugin<T = any>(config: PersistConfig): Config<T> {
+function persistPlugin<T = any>(config: PersistConfig): Plugin<T> {
   const { age = 30000, key } = config
 
   return {

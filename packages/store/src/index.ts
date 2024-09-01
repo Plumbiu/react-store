@@ -1,4 +1,4 @@
 export * from './react'
 export * from './shallow'
-export * from './types'
+export type { Plugin } from './types'
 export * from './plugins/index'

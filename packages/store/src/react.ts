@@ -1,24 +1,14 @@
 /* eslint-disable @stylistic/indent */
 import { useSyncExternalStore } from 'react'
-import { Config, Listeners, ReturnStoreType, State } from './types'
-import { isEqual } from './utils'
-
-export class CreateStoreInstance {
-  plugins: Config<any>[] = []
-
-  constructor(plugins: Config<any>[]) {
-    this.plugins = plugins
-  }
-
-  createStore(plugin: Config<any>) {
-  }
-}
+import { Plugin, Listeners, ReturnStoreType, State } from './types'
+import { composePlugins, isEqual } from './utils'
 
 export function createStore<T extends State>(
   state: T & ThisType<T & { $set: (state: Partial<T>) => void }>,
-  config?: Config<T>,
+  plugins?: Plugin<T>[],
 ): ReturnStoreType<T> {
   const listeners: Listeners = new Set()
+  const config = composePlugins(plugins)
   config?.setup?.(state)
   function set(origin: Partial<T>) {
     if (isEqual(origin, state)) {

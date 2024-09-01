@@ -11,5 +11,5 @@ export const personStore = createStore(
       this.$set({ name: this.name + '-' })
     },
   },
-  persistPlugin({ key: 'person' }),
+  [persistPlugin({ key: 'person' })],
 )
