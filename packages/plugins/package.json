@@ -1,28 +1,5 @@
 {
-  "name": "@plumbiu/react-store-plugins",
-  "version": "0.4.0",
-  "description": "Less than 1kb global state management implement",
-  "main": "dist/index.js",
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "state",
-    "react",
-    "store"
-  ],
-  "exports": {
-    ".": {
-      "import": {
-        "default": "./dist/index.mjs",
-        "types": "./dist/index.d.mts"
-      },
-      "require": {
-        "default": "./dist/index.js",
-        "types": "./dist/index.d.ts"
-      }
-    }
-  },
+  "name": "@plumbiu/react-store-plugin",
   "author": "Plumbiu",
   "license": "MIT"
 }
