@@ -28,7 +28,74 @@ export default function App() {
 }
 ```
 
-# Life cycle
+# Immer
+
+You can use `createImmerStore` api to reduce the nested structures:
+
+```jsx
+const immerStore = createImmerStore({
+  info: {
+    address: {
+      country: 'china',
+    },
+    age: 18,
+  },
+  changeAddress() {
+    this.$set((draft) => {
+      draft.info.address.province = 'hangzhou'
+    })
+  },
+  changeAge() {
+    this.$set((draft) => {
+      draft.info.age++
+    })
+  },
+})
+```
+
+# Plugin
+
+## persit
+
+```js
+const personStore = createStore(
+  {
+    age: 21,
+    name: 'foo',
+    async changeAge(age: number) {
+      this.$set({ age })
+    },
+    changeName() {
+      this.$set({ name: this.name + '-' })
+    },
+  },
+  // key for localStorage
+  persist({ key: 'person', age: 30000 }),
+)
+```
+
+## composePlugin
+
+```js
+const personStore = createStore(
+  {
+    age: 21,
+    name: 'foo',
+    async changeAge(age: number) {
+      this.$set({ age })
+    },
+    changeName() {
+      this.$set({ name: this.name + '-' })
+    },
+  },
+  // key for localStorage
+  composePlugin([plugin1(), plugin2(), plugin3()]),
+)
+```
+
+## Custom
+
+Plugin build with four hooks:
 
 - `setup(state) => void`: init state
 - `propsAreEqual(prevProps, nextProps)`：if return `true`, state will not update and react will not re-render

@@ -4,10 +4,8 @@ import { useSyncExternalStore } from 'react'
 import { Plugin, ReturnStoreType, State } from './types'
 import { createStoreFactory } from './factory'
 
-type Set<T extends State> = (state: Partial<T>) => void
-
 export const createStore = <T extends State>(
-  _state: T & ThisType<T & { $set: Set<T> }>,
+  _state: T & ThisType<T & { $set: (state: Partial<T>) => void }>,
   plugin?: Plugin<typeof _state>,
 ) =>
   createStoreFactory(
