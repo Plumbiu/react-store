@@ -14,7 +14,7 @@ export function createStoreFactory<T extends State>(
   plugin?.setup?.(state)
   ;(state as any).$set = (origin: $SetParams<T>) => {
     const nextState = produce(origin, state)
-    if (typeof origin !== 'function' && isEqual(origin, state)) {
+    if (isEqual(nextState, state)) {
       return
     }
     if (plugin?.propsAreEqual?.(state, nextState)) {

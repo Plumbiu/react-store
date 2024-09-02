@@ -9,6 +9,8 @@ export function isEqual(source: State, target: State) {
   return true
 }
 
+const composeRestArgs = (fn: Function | undefined, args: any[]) => fn?.(...args)
+
 export function composePlugin<T extends State>(
   plugins?: Plugin<T>[],
 ): Plugin<T> {
@@ -18,16 +20,22 @@ export function composePlugin<T extends State>(
   return plugins.reduce((prev, curr) => {
     return {
       setup(...args) {
-        prev.setup?.(...args)
-        curr.setup?.(...args)
+        composeRestArgs(prev.setup, args)
+        composeRestArgs(curr.setup, args)
       },
       propsAreEqual: (...args) =>
-        !!(prev.propsAreEqual?.(...args) && curr.propsAreEqual?.(...args)),
+        !!(
+          composeRestArgs(prev.propsAreEqual, args) &&
+          composeRestArgs(curr.propsAreEqual, args)
+        ),
       shouldUpdate: (...args) =>
-        !!(prev.shouldUpdate?.(...args) && curr.shouldUpdate?.(...args)),
+        !!(
+          composeRestArgs(prev.shouldUpdate, args) &&
+          composeRestArgs(curr.shouldUpdate, args)
+        ),
       afterUpdate(...args) {
-        prev.afterUpdate?.(...args)
-        curr.afterUpdate?.(...args)
+        composeRestArgs(prev.afterUpdate, args)
+        composeRestArgs(curr.afterUpdate, args)
       },
     }
   })
