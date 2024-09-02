@@ -12,8 +12,7 @@ export default defineConfig({
   outDir: 'packages/store/dist',
   format: ['esm', 'cjs'],
   clean: true,
-  bundle: true,
   minify: 'terser',
   dts: true,
-  external: ['react'],
+  external: ['react', 'immer'],
 })

@@ -1,9 +1,11 @@
 import Basic from './components/Basic'
 import Immer from './components/ImmerStore'
+import Persit from './components/Persist'
 
 const components = {
   basic: <Basic />,
   immer: <Immer />,
+  persit: <Persit />,
 }
 
 export default function App() {

@@ -1,4 +1,4 @@
-import type { State, Plugin, Listeners } from './types'
+import type { State, Plugin } from './types'
 
 export function isEqual(source: State, target: State) {
   for (const key in target) {
@@ -31,35 +31,4 @@ export function composePlugin<T extends State>(
       },
     }
   })
-}
-
-interface BuildAssignParams<T extends State> {
-  assigned: T
-  listeners: Listeners
-  plugin?: Plugin<T>
-  state: T
-  mergedCallback: () => void
-  origin?: Partial<T>
-}
-
-export function modifyState<T extends State>({
-  assigned,
-  state,
-  listeners,
-  plugin,
-  origin,
-  mergedCallback,
-}: BuildAssignParams<T>) {
-  if (origin && isEqual(origin, state)) {
-    return
-  }
-  if (plugin?.propsAreEqual?.(state, assigned)) {
-    return
-  }
-  mergedCallback()
-  if (plugin?.shouldUpdate && !plugin.shouldUpdate(assigned)) {
-    return
-  }
-  listeners.forEach((fn) => fn())
-  plugin?.afterUpdate?.(assigned)
 }

@@ -1,44 +1,20 @@
 /* eslint-disable @stylistic/semi-style */
 /* eslint-disable @stylistic/indent */
 import { useSyncExternalStore } from 'react'
-import { Listeners, Plugin, ReturnStoreType, State } from './types'
-import { modifyState } from './utils'
+import { Plugin, ReturnStoreType, State } from './types'
+import { createStoreFactory } from './factory'
 
 type Set<T extends State> = (state: Partial<T>) => void
 
-export function createStore<T extends State>(
-  state: T & ThisType<T & { $set: Set<T> }>,
-  plugin?: Plugin<any>,
-): ReturnStoreType<T> {
-  const listeners: Listeners = new Set()
-  plugin?.setup?.(state)
-  ;(state as any).$set = (origin: Partial<T>) => {
-    const assigned = Object.assign({}, state, origin)
-    modifyState({
-      assigned,
-      listeners,
-      state,
-      mergedCallback: () => (state = assigned),
-      origin,
-    })
-  }
-  for (const key in state) {
-    let fn = state[key]
-    if (typeof fn === 'function') {
-      ;(state[key] as any) = (...args: any[]) => fn.apply(state, args)
-    }
-  }
-
-  return [
-    (listener) => {
-      listeners.add(listener)
-      return () => listeners.delete(listener)
-    },
-    (selector) => {
-      return selector ? state[selector] : state
-    },
-  ]
-}
+export const createStore = <T extends State>(
+  _state: T & ThisType<T & { $set: Set<T> }>,
+  plugin?: Plugin<typeof _state>,
+) =>
+  createStoreFactory(
+    _state,
+    (origin, state: T) => Object.assign({}, state, origin),
+    plugin,
+  )
 
 export function useStore<T, K extends keyof T>(
   store: ReturnStoreType<T>,
