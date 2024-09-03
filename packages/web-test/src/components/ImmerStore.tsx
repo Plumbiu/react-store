@@ -1,4 +1,4 @@
-import { useStore, createImmerStore } from '@plumbiu/react-store'
+import { createImmerStore } from '@plumbiu/react-store'
 
 interface Info {
   info: {
@@ -12,7 +12,7 @@ interface Info {
   changeAge: () => void
 }
 
-const immerStore = createImmerStore<Info>({
+const useImmerStore = createImmerStore<Info>({
   info: {
     address: {
       country: 'china',
@@ -32,7 +32,7 @@ const immerStore = createImmerStore<Info>({
 })
 
 function Child() {
-  const data = useStore(immerStore)
+  const data = useImmerStore()
   return (
     <>
       <div>country: {data.info.address.country}</div>
@@ -45,7 +45,7 @@ function Child() {
 }
 
 export default function Immer() {
-  const info = useStore(immerStore, 'info')
+  const info = useImmerStore('info')
   return (
     <>
       <div>address: {info.address.province || 'unkown'}</div>

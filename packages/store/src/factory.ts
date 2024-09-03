@@ -1,15 +1,16 @@
 /* eslint-disable @stylistic/semi-style */
 import { Draft } from 'immer'
-import { State, ReturnStoreType, Listener, Plugin } from './types'
+import { useSyncExternalStore } from 'react'
+import { BaseState, Listener, Plugin, State } from './types'
 import { isEqual } from './utils'
 
-type $SetParams<T extends State> = Partial<T> | ((draft: Draft<T>) => void)
+type $SetParams<T extends BaseState> = Partial<T> | ((draft: Draft<T>) => void)
 
-export function createStoreFactory<T extends State>(
-  state: T & ThisType<T & { $set: (cb: (draft: Draft<T>) => void) => void }>,
+export function createStoreFactory<T extends BaseState>(
+  state: State<T>,
   produce: (state: T, param: $SetParams<typeof state>) => T,
   plugin?: Plugin<typeof state>,
-): ReturnStoreType<T> {
+) {
   const listeners = new Set<Listener>()
   ;(state as any).$set = (param: $SetParams<T>) => {
     const nextState = produce(state, param)
@@ -35,13 +36,22 @@ export function createStoreFactory<T extends State>(
     }
   }
 
-  return [
-    (listener) => {
-      listeners.add(listener)
-      return () => listeners.delete(listener)
-    },
-    (selector) => {
-      return selector ? state[selector] : state
-    },
-  ]
+  function returnFn(): T
+  function returnFn<K extends keyof T>(selector: K): T[K]
+  function returnFn<K extends keyof T>(
+    selector?: K,
+    getServerSnapshot?: () => T,
+  ) {
+    const data = useSyncExternalStore(
+      (listener) => {
+        listeners.add(listener)
+        return () => listeners.delete(listener)
+      },
+      () => (selector ? state[selector] : state),
+      getServerSnapshot,
+    )
+    return data
+  }
+
+  return returnFn
 }

@@ -1,6 +1,6 @@
-import type { State, Plugin } from './types'
+import type { BaseState, Plugin } from './types'
 
-export function isEqual(source: State, target: State) {
+export function isEqual(source: BaseState, target: BaseState) {
   for (const key in target) {
     if (!Object.is(source[key], target[key])) {
       return false
@@ -11,7 +11,7 @@ export function isEqual(source: State, target: State) {
 
 const composeRestArgs = (fn: Function | undefined, args: any[]) => fn?.(...args)
 
-export function composePlugin<T extends State>(
+export function composePlugin<T extends BaseState>(
   plugins?: Plugin<T>[],
 ): Plugin<T> {
   if (!plugins) {

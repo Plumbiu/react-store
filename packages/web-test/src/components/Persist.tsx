@@ -1,6 +1,6 @@
-import { useStore, createStore, persist } from '@plumbiu/react-store'
+import { createStore, persist } from '@plumbiu/react-store'
 
-const personStore = createStore(
+const usePersonStore = createStore(
   {
     age: 21,
     name: 'foo',
@@ -15,7 +15,7 @@ const personStore = createStore(
 )
 
 function Child() {
-  const data = useStore(personStore)
+  const data = usePersonStore()
   return (
     <>
       <div>age: {data.age}</div>
@@ -26,7 +26,7 @@ function Child() {
 }
 
 export default function Persist() {
-  const name = useStore(personStore, 'name')
+  const name = usePersonStore('name')
   console.log('re-render')
   return (
     <>

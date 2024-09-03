@@ -5,9 +5,9 @@
 # Usage
 
 ```tsx
-import { useStore, createStore } from '@plumbiu/react-store'
+import { createStore } from '@plumbiu/react-store'
 
-const countStore = createStore({
+const useCountStore = createStore({
   count: 15,
   inc() {
     this.$set({ count: this.count + 1 })
@@ -15,10 +15,10 @@ const countStore = createStore({
 })
 
 export default function App() {
-  const { count, inc } = useStore(countStore)
+  const { count, inc } = useCountStore()
   // or use selector, it will avoid global subscriptions
-  // const count = useStore(countStore, 'count')
-  // const inc = useStore(countStore, 'inc)
+  // const count = useCountStore('count')
+  // const inc = useCountStore('inc')
   return (
     <>
       <div>count: {count}</div>
@@ -33,7 +33,7 @@ export default function App() {
 You can use `createImmerStore` api to reduce the nested structures:
 
 ```jsx
-const immerStore = createImmerStore({
+const useImmerStore = createImmerStore({
   info: {
     address: {
       country: 'china',
@@ -58,7 +58,7 @@ const immerStore = createImmerStore({
 ## persit
 
 ```js
-const personStore = createStore(
+const usePersonStore = createStore(
   {
     age: 21,
     name: 'foo',
@@ -77,7 +77,7 @@ const personStore = createStore(
 ## composePlugin
 
 ```js
-const personStore = createStore(
+const usePersonStore = createStore(
   {
     age: 21,
     name: 'foo',
@@ -105,8 +105,8 @@ Plugin build with four hooks:
 **Simple: only render even numbers**
 
 ```tsx
-import { useStore, createStore } from '@plumbiu/react-store'
-const numStore = createStore(
+import { createStore } from '@plumbiu/react-store'
+const useNumStore = createStore(
   {
     num: 2,
     inc() {
@@ -121,7 +121,7 @@ const numStore = createStore(
 )
 
 export default function App() {
-  const data = useStore(numStore)
+  const data = useNumStore()
   return (
     <>
       <div>name: {data.num}</div>
