@@ -1,6 +1,7 @@
 /* eslint-disable @stylistic/semi-style */
 /* eslint-disable @stylistic/indent */
 import { useSyncExternalStore } from 'react'
+import { Draft, produce } from 'immer'
 import { Plugin, ReturnStoreType, State } from './types'
 import { createStoreFactory } from './factory'
 
@@ -10,9 +11,14 @@ export const createStore = <T extends State>(
 ) =>
   createStoreFactory(
     _state,
-    (origin, state: T) => Object.assign({}, state, origin),
+    (state, param) => Object.assign({}, state, param),
     plugin,
   )
+
+export const createImmerStore = <T extends State>(
+  _state: T & ThisType<T & { $set: (cb: (draft: Draft<T>) => void) => void }>,
+  plugin?: Plugin<typeof _state>,
+) => createStoreFactory(_state, produce, plugin as any)
 
 export function useStore<T, K extends keyof T>(
   store: ReturnStoreType<T>,
