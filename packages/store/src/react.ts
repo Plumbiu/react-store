@@ -67,7 +67,7 @@ export const createStore = <T extends BaseState>(
     plugin,
   )
 
-export const createImmerStore = <T extends BaseState, P = Plugin<T>>(
+export const createImmerStore = <T extends BaseState>(
   _state: T & ThisType<T & { $set: (cb: (draft: Draft<T>) => void) => void }>,
   plugin?: Plugin<any>,
 ) => createStoreFactory<T>(_state, produce, plugin)
