@@ -1,14 +1,5 @@
 import type { BaseState, Plugin } from './types'
 
-export function isEqual(source: BaseState, target: BaseState) {
-  for (const key in target) {
-    if (!Object.is(source[key], target[key])) {
-      return false
-    }
-  }
-  return true
-}
-
 const composeRestArgs = (fn: Function | undefined, args: any[]) => fn?.(...args)
 
 export function composePlugin<T extends BaseState>(
@@ -40,3 +31,6 @@ export function composePlugin<T extends BaseState>(
     }
   })
 }
+
+export const assign = <T extends BaseState>(state: T, param: Partial<T>): T =>
+  Object.assign({}, state, param)

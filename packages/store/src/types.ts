@@ -1,7 +1,5 @@
-import { useSyncExternalStore } from 'react'
-
-type SyncExternalStoreParams = Parameters<typeof useSyncExternalStore>
-export type Listener = Parameters<SyncExternalStoreParams[0]>[0]
+export type Listener<T extends BaseState> = (prevState: T, state: T) => void
+export type ListenerFn<T extends BaseState> = () => Listener<T>
 export interface BaseState {
   [key: string | number | symbol]: any
 }
