@@ -1,6 +1,6 @@
 {
   "name": "@plumbiu/react-store",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "main": "./dist/index.mjs",
   "description": "Less than 1kb glob state management implement",
   "types": "./dist/index.d.mts",
