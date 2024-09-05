@@ -28,7 +28,7 @@ export default function App() {
 }
 ```
 
-# Immer
+## Immer
 
 You can use `createImmerStore` api to reduce the nested structures:
 
@@ -51,6 +51,27 @@ const useImmerStore = createImmerStore({
     })
   },
 })
+```
+
+## Reading/writing state and reacting to changes outside of React Components
+
+Sometimes we need access state outside React Components.
+
+Get state outside component：
+
+```js
+const store = createStore({ name: 'foo' })
+// non-reactive fresh state
+store.$getState() // { name: 'foo' }
+// Updateding state, React will not re-render
+store.$setState({ name: 'bar' })
+store.$getState() // { name: 'bar' }
+// Geting the initial state
+store.$getInitialState() // { name: 'foo' }
+// Updating state will trigger the listener
+const unsub = store.$subscribe(console.log)
+// Unscribe the listener
+unsub()
 ```
 
 # Plugin
