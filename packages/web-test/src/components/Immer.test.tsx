@@ -1,4 +1,4 @@
 import { BaseTest } from '../test-utils'
 import Immer from './Immer'
 
-BaseTest(<Immer />, 'Immer')
+BaseTest(<Immer />, 'Basic immer test')

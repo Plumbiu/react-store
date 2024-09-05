@@ -1,11 +1,11 @@
 {
   "name": "mini-redux",
-  "version": "0.0.2",
   "description": "Less than 1kb glob state management implement",
   "main": "index.js",
   "scripts": {
     "build": "tsup",
-    "dev:test": "pnpm -F react-store-test run dev",
+    "dev:web": "pnpm -F react-store-web run dev",
+    "dev:test": "pnpm -F react-store-web run test",
     "dev:core": "tsup --watch",
     "dev": "npm-run-all --parallel dev:*",
     "pub": "pnpm build && cd ./packages/store && pnpm publish"
