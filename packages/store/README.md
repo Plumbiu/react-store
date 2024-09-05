@@ -57,8 +57,6 @@ const useImmerStore = createImmerStore({
 
 Sometimes we need access state outside React Components.
 
-Get state outside component：
-
 ```js
 const store = createStore({ name: 'foo' })
 // non-reactive fresh state
