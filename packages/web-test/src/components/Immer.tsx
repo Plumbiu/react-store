@@ -2,31 +2,30 @@ import { createImmerStore } from '@plumbiu/react-store'
 
 interface Info {
   info: {
-    address: {
-      country: string
-      province?: string
+    data: {
+      name: string
+      age: number
     }
-    age: number
   }
-  changeAddress: () => void
+  changeName: () => void
   changeAge: () => void
 }
 
 const useImmerStore = createImmerStore<Info>({
   info: {
-    address: {
-      country: 'china',
+    data: {
+      name: 'foo',
+      age: 21,
     },
-    age: 18,
   },
-  changeAddress() {
+  changeName() {
     this.$set((draft) => {
-      draft.info.address.province = 'hangzhou'
+      draft.info.data.name += '-'
     })
   },
   changeAge() {
     this.$set((draft) => {
-      draft.info.age++
+      draft.info.data.age++
     })
   },
 })
@@ -35,11 +34,10 @@ function Child() {
   const data = useImmerStore()
   return (
     <>
-      <div>country: {data.info.address.country}</div>
-      <div>province: {data.info.address.province || 'unkown'}</div>
-      <div>age: {data.info.age}</div>
-      <button onClick={data.changeAddress}>change address</button>
+      <div>age: {data.info.data.age}</div>
+      <div>name: {data.info.data.name}</div>
       <button onClick={data.changeAge}>change age</button>
+      <button onClick={data.changeName}>change name</button>
     </>
   )
 }
@@ -48,7 +46,7 @@ export default function Immer() {
   const info = useImmerStore('info')
   return (
     <>
-      <div>address: {info.address.province || 'unkown'}</div>
+      <div>name: {info.data.name}</div>
       <h4>Child</h4>
       <Child />
     </>

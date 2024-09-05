@@ -18,6 +18,7 @@ function Child() {
   return (
     <>
       <div>age: {data.age}</div>
+      <div>name: {data.name}</div>
       <button onClick={() => data.changeAge(data.age + 1)}>change age</button>
       <button onClick={data.changeName}>change name</button>
     </>
