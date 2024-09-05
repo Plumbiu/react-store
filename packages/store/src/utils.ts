@@ -3,7 +3,7 @@ import type { BaseState, Plugin } from './types'
 const composeRestArgs = (fn: Function | undefined, args: any[]) => fn?.(...args)
 
 export function composePlugin<T extends BaseState>(
-  plugins?: Plugin<T>[],
+  ...plugins: Plugin<T>[]
 ): Plugin<T> {
   if (!plugins) {
     return {}

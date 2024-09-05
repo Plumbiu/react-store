@@ -89,7 +89,7 @@ const usePersonStore = createStore(
     },
   },
   // key for localStorage
-  composePlugin([plugin1(), plugin2(), plugin3()]),
+  composePlugin(plugin1(), plugin2(), plugin3()),
 )
 ```
 
