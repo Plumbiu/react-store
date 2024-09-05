@@ -3,7 +3,7 @@
 /* eslint-disable @stylistic/indent */
 import { Draft, produce } from 'immer'
 import { useSyncExternalStore } from 'react'
-import { Plugin, BaseState, Listener } from './types'
+import type { Plugin, BaseState, Listener } from './types'
 import { assign } from './utils'
 
 type Produce<T extends BaseState> =
@@ -43,12 +43,10 @@ export function createStoreFactory<T extends BaseState>(
     }
   }
 
-  const addListener = (listener: Listener<T>) => {
+  returnFn.$subscribe = (listener: Listener<T>) => {
     listeners.add(listener)
     return () => listeners.delete(listener)
   }
-
-  returnFn.$subscribe = addListener
   returnFn.$getState = (selector?: keyof T) =>
     selector ? state[selector] : state
   returnFn.$getInitialState = () => initialState
@@ -58,7 +56,7 @@ export function createStoreFactory<T extends BaseState>(
   function returnFn<K extends keyof T>(selector: K): T[K]
   function returnFn<K extends keyof T>(selector?: K) {
     const data = useSyncExternalStore(
-      addListener,
+      returnFn.$subscribe,
       () => returnFn.$getState(selector),
       returnFn.$getInitialState,
     )

@@ -1,6 +1,6 @@
 {
   "name": "@plumbiu/react-store",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "main": "./dist/index.mjs",
   "description": "Less than 1kb glob state management implement",
   "types": "./dist/index.d.mts",
@@ -24,12 +24,21 @@
       }
     }
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Plumbiu/react-store"
+  },
+  "homepage": "https://github.com/Plumbiu/react-store",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "author": "Plumbiu",
   "dependencies": {
     "immer": "^10.1.1"
   },
   "license": "MIT",
   "peerDependencies": {
-    "react": "^18"
+    "react": ">=18"
   }
 }
