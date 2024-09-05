@@ -8,7 +8,7 @@
     "dev:test": "pnpm -F react-store-test run dev",
     "dev:core": "tsup --watch",
     "dev": "npm-run-all --parallel dev:*",
-    "pub": "cd ./packages/store && pnpm publish"
+    "pub": "pnpm build && cd ./packages/store && pnpm publish"
   },
   "license": "MIT",
   "devDependencies": {
