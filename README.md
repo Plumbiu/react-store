@@ -61,7 +61,7 @@ Sometimes we need access state outside React Components.
 const store = createStore({ name: 'foo' })
 // non-reactive fresh state
 store.$getState() // { name: 'foo' }
-// Updateding state, React will not re-render
+// Updateding state outside component
 store.$setState({ name: 'bar' })
 store.$getState() // { name: 'bar' }
 // Geting the initial state

@@ -11,14 +11,14 @@ type Produce<T extends BaseState> =
   | ((state: T, param: (draft: Draft<T>) => void) => T)
 type $Set<T extends BaseState> = (state: Partial<T>) => void
 type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
-export function createStoreFactory<T extends BaseState>(
+export function createStoreFactory<T extends BaseState, S>(
   state: T,
   produce: Produce<T>,
   plugin?: Plugin<T>,
 ) {
   const initialState = state
   const listeners = new Set<Listener<T>>()
-  ;(state as any).$set = (param: Partial<T> & ((draft: Draft<T>) => void)) => {
+  const set = (param: Partial<T> & ((draft: Draft<T>) => void)) => {
     const nextState = produce(state, param)
     if (
       Object.is(nextState, state) ||
@@ -34,6 +34,7 @@ export function createStoreFactory<T extends BaseState>(
     listeners.forEach((fn) => fn(prevState, state))
     plugin?.afterUpdate?.(nextState)
   }
+  ;(state as any).$set = set
   plugin?.setup?.(state, plugin)
 
   for (const key in state) {
@@ -50,7 +51,7 @@ export function createStoreFactory<T extends BaseState>(
   returnFn.$getState = (selector?: keyof T) =>
     selector ? state[selector] : state
   returnFn.$getInitialState = () => initialState
-  returnFn.$setState = (param: Partial<T>) => assign(state, param)
+  returnFn.$setState = set as S
 
   function returnFn(): T
   function returnFn<K extends keyof T>(selector: K): T[K]
@@ -69,9 +70,9 @@ export function createStoreFactory<T extends BaseState>(
 export const createStore = <T extends BaseState>(
   _state: T & ThisType<T & { $set: $Set<T> }>,
   plugin?: Plugin<any>,
-) => createStoreFactory<T>(_state, assign, plugin)
+) => createStoreFactory<T, $Set<T>>(_state, assign, plugin)
 
 export const createImmerStore = <T extends BaseState>(
   _state: T & ThisType<T & { $set: $ImmerSet<T> }>,
   plugin?: Plugin<any>,
-) => createStoreFactory<T>(_state, produce, plugin)
+) => createStoreFactory<T, $ImmerSet<T>>(_state, produce, plugin)
