@@ -19,5 +19,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "**/*.ts", "**/*.tsx", "./vitest.setup.ts"]
+  "include": ["src", "**/*.ts", "**/*.tsx", "../../vitest.setup.ts", "../../vitest.config.ts"]
 }

@@ -4,8 +4,10 @@
   "main": "index.js",
   "scripts": {
     "build": "tsup",
+    "bench": "vitest bench --dir=benchlib --outputFile.json=benchlib/result.json",
+    "bench:compare": "vitest bench --compare=benchlib/result.json",
     "dev:web": "pnpm -F react-store-web run dev",
-    "dev:test": "pnpm -F react-store-web run test",
+    "test": "vitest --dir packages/web-test",
     "dev:core": "tsup --watch",
     "dev": "npm-run-all --parallel dev:*",
     "pub": "pnpm build && cd ./packages/store && pnpm publish"
@@ -13,12 +15,21 @@
   "license": "MIT",
   "devDependencies": {
     "@plumbiu/eslint-config": "^0.2.1",
+    "@plumbiu/react-store": "workspace:^",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^16.0.1",
+    "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "@vitest/ui": "latest",
     "eslint": "8",
     "npm-run-all": "^4.1.5",
     "terser": "^5.31.6",
     "tsup": "^8.2.4",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vite": "^5.3.4",
+    "vitest": "^2.0.5"
   }
 }
