@@ -36,3 +36,4 @@ twid.config.json
 *.tsbuildinfo
 next-env.d.ts
 /index.js
+benchlib/result.json

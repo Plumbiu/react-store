@@ -41,6 +41,9 @@ importers:
       eslint:
         specifier: '8'
         version: 8.57.0
+      esno:
+        specifier: ^4.7.0
+        version: 4.7.0
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
@@ -49,7 +52,7 @@ importers:
         version: 5.31.6
       tsup:
         specifier: ^8.2.4
-        version: 8.2.4(@swc/core@1.7.6)(postcss@8.4.40)(typescript@5.5.4)
+        version: 8.2.4(@swc/core@1.7.6)(postcss@8.4.40)(tsx@4.19.0)(typescript@5.5.4)
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -1205,6 +1208,10 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     hasBin: true
 
+  esno@4.7.0:
+    resolution: {integrity: sha512-81owrjxIxOwqcABt20U09Wn8lpBo9K6ttqbGvQcB3VYNLJyaV1fvKkDtpZd3Rj5BX3WXiGiJCjUevKQGNICzJg==}
+    hasBin: true
+
   espree@9.6.1:
     resolution: {integrity: sha512-oruZaFkjorTpF32kDSI5/75ViwGeZginGGy2NoOSg3Q9bnwlnmDm4HLnkl0RE3n+njDXR037aY1+x58Z/zFdwQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
@@ -2263,6 +2270,11 @@ packages:
         optional: true
       typescript:
         optional: true
+
+  tsx@4.19.0:
+    resolution: {integrity: sha512-bV30kM7bsLZKZIOCHeMNVMJ32/LuJzLVajkQI/qf92J2Qr08ueLQvW00PUZGiuLPP760UINwupgUj8qrSCPUKg==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -3613,6 +3625,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  esno@4.7.0:
+    dependencies:
+      tsx: 4.19.0
+
   espree@9.6.1:
     dependencies:
       acorn: 8.12.1
@@ -4277,11 +4293,12 @@ snapshots:
 
   possible-typed-array-names@1.0.0: {}
 
-  postcss-load-config@6.0.1(postcss@8.4.40):
+  postcss-load-config@6.0.1(postcss@8.4.40)(tsx@4.19.0):
     dependencies:
       lilconfig: 3.1.2
     optionalDependencies:
       postcss: 8.4.40
+      tsx: 4.19.0
 
   postcss@8.4.40:
     dependencies:
@@ -4645,7 +4662,7 @@ snapshots:
       minimist: 1.2.8
       strip-bom: 3.0.0
 
-  tsup@8.2.4(@swc/core@1.7.6)(postcss@8.4.40)(typescript@5.5.4):
+  tsup@8.2.4(@swc/core@1.7.6)(postcss@8.4.40)(tsx@4.19.0)(typescript@5.5.4):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.0)
       cac: 6.7.14
@@ -4657,7 +4674,7 @@ snapshots:
       globby: 11.1.0
       joycon: 3.1.1
       picocolors: 1.0.1
-      postcss-load-config: 6.0.1(postcss@8.4.40)
+      postcss-load-config: 6.0.1(postcss@8.4.40)(tsx@4.19.0)
       resolve-from: 5.0.0
       rollup: 4.20.0
       source-map: 0.8.0-beta.0
@@ -4672,6 +4689,13 @@ snapshots:
       - supports-color
       - tsx
       - yaml
+
+  tsx@4.19.0:
+    dependencies:
+      esbuild: 0.23.0
+      get-tsconfig: 4.7.6
+    optionalDependencies:
+      fsevents: 2.3.3
 
   type-check@0.4.0:
     dependencies:
