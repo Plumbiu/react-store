@@ -93,9 +93,10 @@ const usePersonStore = createStore(
 )
 ```
 
-## composePlugin
+## compose
 
 ```js
+import { compose } from '@plumbiu/react-store'
 const usePersonStore = createStore(
   {
     age: 21,
@@ -108,7 +109,7 @@ const usePersonStore = createStore(
     },
   },
   // key for localStorage
-  composePlugin(plugin1(), plugin2(), plugin3()),
+  compose(plugin1(), plugin2(), plugin3()),
 )
 ```
 

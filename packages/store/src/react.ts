@@ -4,7 +4,7 @@
 import { Draft, produce } from 'immer'
 import { useSyncExternalStore } from 'react'
 import type { Plugin, BaseState, Listener } from './types'
-import { assign } from './utils'
+import { assign, shllow } from './utils'
 
 type Produce<T extends BaseState> =
   | ((state: T, param: Partial<T>) => T)
@@ -20,10 +20,7 @@ export function createStoreFactory<T extends BaseState, S>(
   const listeners = new Set<Listener<T>>()
   const set = (param: Partial<T> & ((draft: Draft<T>) => void)) => {
     const nextState = produce(state, param)
-    if (
-      Object.is(nextState, state) ||
-      plugin?.propsAreEqual?.(state, nextState)
-    ) {
+    if (shllow(state, nextState) || plugin?.propsAreEqual?.(state, nextState)) {
       return
     }
     const prevState = state
