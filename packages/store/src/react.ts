@@ -6,19 +6,16 @@ import { useSyncExternalStore } from 'react'
 import type { Plugin, BaseState, Listener } from './types'
 import { assign, shllow } from './utils'
 
-type Produce<T extends BaseState> =
-  | ((state: T, param: Partial<T>) => T)
-  | ((state: T, param: (draft: Draft<T>) => void) => T)
 type $Set<T extends BaseState> = (state: Partial<T>) => void
 type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
-export function createStoreFactory<T extends BaseState, S>(
+export function createStoreFactory<T extends BaseState, S, P>(
   state: T,
-  produce: Produce<T>,
+  produce: (state: T, param: P) => T,
   plugin?: Plugin<T>,
 ) {
   const initialState = state
   const listeners = new Set<Listener<T>>()
-  const set = (param: Partial<T> & ((draft: Draft<T>) => void)) => {
+  const set = (param: P) => {
     const nextState = produce(state, param)
     if (shllow(state, nextState) || plugin?.propsAreEqual?.(state, nextState)) {
       return
@@ -67,9 +64,14 @@ export function createStoreFactory<T extends BaseState, S>(
 export const createStore = <T extends BaseState>(
   _state: T & ThisType<T & { $set: $Set<T> }>,
   plugin?: Plugin<any>,
-) => createStoreFactory<T, $Set<T>>(_state, assign, plugin)
+) => createStoreFactory<T, $Set<T>, Partial<T>>(_state, assign, plugin)
 
 export const createImmerStore = <T extends BaseState>(
   _state: T & ThisType<T & { $set: $ImmerSet<T> }>,
   plugin?: Plugin<any>,
-) => createStoreFactory<T, $ImmerSet<T>>(_state, produce, plugin)
+) =>
+  createStoreFactory<T, $ImmerSet<T>, (draft: Draft<T>) => void>(
+    _state,
+    produce,
+    plugin,
+  )
