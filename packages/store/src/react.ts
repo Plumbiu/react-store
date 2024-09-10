@@ -10,10 +10,11 @@ export function createStoreFactory<T extends BaseState, S, P>(
   state: T,
   produce: (state: T, param: P) => T,
 ) {
+  type TPlugin = Plugin<T>
+  type RequiredPlguin = Required<TPlugin>
+
   const initialState = state
   const listeners = new Set<Listener<T>>()
-
-  type RequiredPlguin = Required<Plugin<T>>
   const setups: RequiredPlguin['setup'][] = []
   const shouldUpdates: RequiredPlguin['shouldUpdate'][] = []
   const propsAreEquals: RequiredPlguin['propsAreEqual'][] = []
@@ -61,7 +62,7 @@ export function createStoreFactory<T extends BaseState, S, P>(
     propsAreEqual,
     shouldUpdate,
     afterUpdate,
-  }: Partial<Plugin<T>>) => {
+  }: TPlugin) => {
     setup && setups.push(setup)
     propsAreEqual && propsAreEquals.push(propsAreEqual)
     shouldUpdate && shouldUpdates.push(shouldUpdate)
