@@ -15,7 +15,6 @@ export function createStoreFactory<T extends BaseState, S, P>(
 
   const initialState = state
   const listeners = new Set<Listener<T>>()
-  const setups: RequiredPlguin['setup'][] = []
   const shouldUpdates: RequiredPlguin['shouldUpdate'][] = []
   const propsAreEquals: RequiredPlguin['propsAreEqual'][] = []
   const afterUpdates: RequiredPlguin['afterUpdate'][] = []
@@ -38,10 +37,6 @@ export function createStoreFactory<T extends BaseState, S, P>(
     }
   }
   ;(state as any).$set = set
-  for (const setup of setups) {
-    setup(state)
-  }
-
   for (const key in state) {
     let fn = state[key]
     if (typeof fn === 'function') {
@@ -63,7 +58,7 @@ export function createStoreFactory<T extends BaseState, S, P>(
     shouldUpdate,
     afterUpdate,
   }: TPlugin) => {
-    setup && setups.push(setup)
+    setup?.(state)
     propsAreEqual && propsAreEquals.push(propsAreEqual)
     shouldUpdate && shouldUpdates.push(shouldUpdate)
     afterUpdate && afterUpdates.push(afterUpdate)
