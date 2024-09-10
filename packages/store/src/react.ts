@@ -6,29 +6,40 @@ import { useSyncExternalStore } from 'react'
 import type { Plugin, BaseState, Listener } from './types'
 import { assign, shllow } from './utils'
 
-export function createStoreFactory<T, S, P>(
+export function createStoreFactory<T extends BaseState, S, P>(
   state: T,
   produce: (state: T, param: P) => T,
-  _plugin?: any,
 ) {
   const initialState = state
   const listeners = new Set<Listener<T>>()
-  const plugin = _plugin as Plugin<T>
+
+  type RequiredPlguin = Required<Plugin<T>>
+  const setups: RequiredPlguin['setup'][] = []
+  const shouldUpdates: RequiredPlguin['shouldUpdate'][] = []
+  const propsAreEquals: RequiredPlguin['propsAreEqual'][] = []
+  const afterUpdates: RequiredPlguin['afterUpdate'][] = []
   const set = (param: P) => {
     const nextState = produce(state, param)
-    if (plugin?.propsAreEqual?.(state, nextState) || shllow(state, nextState)) {
+    if (
+      propsAreEquals.some((fn) => fn(state, nextState) === true) ||
+      shllow(state, nextState)
+    ) {
       return
     }
     const prevState = state
     state = nextState
-    if (plugin?.shouldUpdate && !plugin.shouldUpdate(nextState)) {
+    if (shouldUpdates.some((fn) => fn(nextState) === false)) {
       return
     }
     listeners.forEach((fn) => fn(prevState, state))
-    plugin?.afterUpdate?.(nextState)
+    for (const afterUpdate of afterUpdates) {
+      afterUpdate(nextState)
+    }
   }
   ;(state as any).$set = set
-  plugin?.setup?.(state, plugin)
+  for (const setup of setups) {
+    setup(state)
+  }
 
   for (const key in state) {
     let fn = state[key]
@@ -45,6 +56,17 @@ export function createStoreFactory<T, S, P>(
     selector ? state[selector] : state
   returnFn.$getInitialState = () => initialState
   returnFn.$setState = set as S
+  returnFn.$use = ({
+    setup,
+    propsAreEqual,
+    shouldUpdate,
+    afterUpdate,
+  }: Partial<Plugin<T>>) => {
+    setup && setups.push(setup)
+    propsAreEqual && propsAreEquals.push(propsAreEqual)
+    shouldUpdate && shouldUpdates.push(shouldUpdate)
+    afterUpdate && afterUpdates.push(afterUpdate)
+  }
 
   function returnFn(): T
   function returnFn<K extends keyof T>(selector: K): T[K]
@@ -63,17 +85,13 @@ export function createStoreFactory<T, S, P>(
 type $Set<T extends BaseState> = (state: Partial<T>) => void
 type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
 type State<T, S> = T & ThisType<T & { $set: S }>
-export const createStore = <T extends BaseState, P = Plugin<T>>(
-  _state: State<T, $Set<T>>,
-  plugin?: P,
-) => createStoreFactory<T, $Set<T>, Partial<T>>(_state, assign, plugin)
+export const createStore = <T extends BaseState>(_state: State<T, $Set<T>>) =>
+  createStoreFactory<T, $Set<T>, Partial<T>>(_state, assign)
 
-export const createImmerStore = <T extends BaseState, P = Plugin<T>>(
+export const createImmerStore = <T extends BaseState>(
   _state: State<T, $ImmerSet<T>>,
-  plugin?: P,
 ) =>
   createStoreFactory<T, $ImmerSet<T>, (draft: Draft<T>) => void>(
     _state,
     immerProduce,
-    plugin,
   )

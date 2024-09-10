@@ -72,7 +72,7 @@ const unsub = store.$subscribe(console.log)
 unsub()
 ```
 
-# Plugin
+# Use `$use` api add plugin
 
 ## persit
 
@@ -88,32 +88,13 @@ const usePersonStore = createStore(
       this.$set({ name: this.name + '-' })
     },
   },
-  // key for localStorage
-  persist({ key: 'person', age: 30000 }),
+  ,
 )
+// key for localStorage
+usePersonStore.$use(persist({ key: 'person', age: 30000 }))
 ```
 
-## compose
-
-```js
-import { compose } from '@plumbiu/react-store'
-const usePersonStore = createStore(
-  {
-    age: 21,
-    name: 'foo',
-    async changeAge(age: number) {
-      this.$set({ age })
-    },
-    changeName() {
-      this.$set({ name: this.name + '-' })
-    },
-  },
-  // key for localStorage
-  compose(plugin1(), plugin2(), plugin3()),
-)
-```
-
-## Custom
+## Custom plugin
 
 Plugin build with four hooks:
 
@@ -126,19 +107,18 @@ Plugin build with four hooks:
 
 ```tsx
 import { createStore } from '@plumbiu/react-store'
-const useNumStore = createStore(
-  {
-    num: 2,
-    inc() {
-      this.$set({ num: this.num + 1 })
-    },
+const useNumStore = createStore({
+  num: 2,
+  inc() {
+    this.$set({ num: this.num + 1 })
   },
-  {
-    shouldUpdate({ num }) {
-      return num % 2 === 0
-    },
+})
+
+useNumStore.$use({
+  shouldUpdate({ num }) {
+    return num % 2 === 0
   },
-)
+})
 
 export default function App() {
   const data = useNumStore()

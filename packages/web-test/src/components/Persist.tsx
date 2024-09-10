@@ -1,18 +1,17 @@
 import { createStore, persist } from '@plumbiu/react-store'
 
-const usePersonStore = createStore(
-  {
-    age: 21,
-    name: 'foo',
-    async changeAge(age: number) {
-      this.$set({ age })
-    },
-    changeName() {
-      this.$set({ name: this.name + '-' })
-    },
+const usePersonStore = createStore({
+  age: 21,
+  name: 'foo',
+  async changeAge(age: number) {
+    this.$set({ age })
   },
-  persist({ key: 'person' }),
-)
+  changeName() {
+    this.$set({ name: this.name + '-' })
+  },
+})
+
+usePersonStore.$use(persist({ key: 'person' }))
 
 function Child() {
   const data = usePersonStore()
