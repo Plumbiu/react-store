@@ -12,27 +12,34 @@ export function createStoreFactory<T extends BaseState, S, P>(
 ) {
   type TPlugin = Plugin<T>
   type RequiredPlguin = Required<TPlugin>
-
+  type PluginRecord = Omit<RequiredPlguin, 'setup'>
+  type PluginKeys = keyof PluginRecord
+  type PluginRecords = {
+    [key in PluginKeys]: PluginRecord[key][]
+  }
   const initialState = state
   const listeners = new Set<Listener<T>>()
-  const shouldUpdates: RequiredPlguin['shouldUpdate'][] = []
-  const propsAreEquals: RequiredPlguin['propsAreEqual'][] = []
-  const afterUpdates: RequiredPlguin['afterUpdate'][] = []
+  const plugins: PluginRecords = {
+    shouldUpdate: [],
+    propsAreEqual: [],
+    afterUpdate: [],
+  }
+
   const set = (param: P) => {
     const nextState = produce(state, param)
     if (
-      propsAreEquals.some((fn) => fn(state, nextState) === true) ||
+      plugins.propsAreEqual.some((fn) => fn(state, nextState) === true) ||
       shllow(state, nextState)
     ) {
       return
     }
     const prevState = state
     state = nextState
-    if (shouldUpdates.some((fn) => fn(nextState) === false)) {
+    if (plugins.shouldUpdate.some((fn) => fn(nextState) === false)) {
       return
     }
     listeners.forEach((fn) => fn(prevState, state))
-    for (const afterUpdate of afterUpdates) {
+    for (const afterUpdate of plugins.afterUpdate) {
       afterUpdate(nextState)
     }
   }
@@ -59,9 +66,9 @@ export function createStoreFactory<T extends BaseState, S, P>(
     afterUpdate,
   }: TPlugin) => {
     setup?.(state)
-    propsAreEqual && propsAreEquals.push(propsAreEqual)
-    shouldUpdate && shouldUpdates.push(shouldUpdate)
-    afterUpdate && afterUpdates.push(afterUpdate)
+    propsAreEqual && plugins.propsAreEqual.push(propsAreEqual)
+    shouldUpdate && plugins.shouldUpdate.push(shouldUpdate)
+    afterUpdate && plugins.afterUpdate.push(afterUpdate)
   }
 
   function returnFn(): T
