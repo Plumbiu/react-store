@@ -1,23 +1,22 @@
 /* eslint-disable @stylistic/no-confusing-arrow */
 /* eslint-disable @stylistic/semi-style */
 /* eslint-disable @stylistic/indent */
-import { Draft, produce } from 'immer'
+import { Draft, produce as immerProduce } from 'immer'
 import { useSyncExternalStore } from 'react'
 import type { Plugin, BaseState, Listener } from './types'
 import { assign, shllow } from './utils'
 
-type $Set<T extends BaseState> = (state: Partial<T>) => void
-type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
-export function createStoreFactory<T extends BaseState, S, P>(
+export function createStoreFactory<T, S, P>(
   state: T,
   produce: (state: T, param: P) => T,
-  plugin?: Plugin<T>,
+  _plugin?: any,
 ) {
   const initialState = state
   const listeners = new Set<Listener<T>>()
+  const plugin = _plugin as Plugin<T>
   const set = (param: P) => {
     const nextState = produce(state, param)
-    if (shllow(state, nextState) || plugin?.propsAreEqual?.(state, nextState)) {
+    if (plugin?.propsAreEqual?.(state, nextState) || shllow(state, nextState)) {
       return
     }
     const prevState = state
@@ -61,17 +60,20 @@ export function createStoreFactory<T extends BaseState, S, P>(
   return returnFn
 }
 
-export const createStore = <T extends BaseState>(
-  _state: T & ThisType<T & { $set: $Set<T> }>,
-  plugin?: Plugin<any>,
+type $Set<T extends BaseState> = (state: Partial<T>) => void
+type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
+type State<T, S> = T & ThisType<T & { $set: S }>
+export const createStore = <T extends BaseState, P = Plugin<T>>(
+  _state: State<T, $Set<T>>,
+  plugin?: P,
 ) => createStoreFactory<T, $Set<T>, Partial<T>>(_state, assign, plugin)
 
-export const createImmerStore = <T extends BaseState>(
-  _state: T & ThisType<T & { $set: $ImmerSet<T> }>,
-  plugin?: Plugin<any>,
+export const createImmerStore = <T extends BaseState, P = Plugin<T>>(
+  _state: State<T, $ImmerSet<T>>,
+  plugin?: P,
 ) =>
   createStoreFactory<T, $ImmerSet<T>, (draft: Draft<T>) => void>(
     _state,
-    produce,
+    immerProduce,
     plugin,
   )
