@@ -11,37 +11,24 @@ export function createStoreFactory<T extends BaseState, S, P>(
   produce: (state: T, param: P) => T,
 ) {
   type TPlugin = Plugin<T>
-  type RequiredPlguin = Required<TPlugin>
-  type PluginRecord = Omit<RequiredPlguin, 'setup'>
-  type PluginKeys = keyof PluginRecord
-  type PluginRecords = {
-    [key in PluginKeys]: PluginRecord[key][]
-  }
   const initialState = state
   const listeners = new Set<Listener<T>>()
-  const plugins: PluginRecords = {
-    shouldUpdate: [],
-    propsAreEqual: [],
-    afterUpdate: [],
-  }
+  let propsAreEqualFn: TPlugin['propsAreEqual']
+  let shouldUpdateFn: TPlugin['shouldUpdate']
+  let afterUpdateFn: TPlugin['afterUpdate']
 
   const set = (param: P) => {
     const nextState = produce(state, param)
-    if (
-      plugins.propsAreEqual.some((fn) => fn(state, nextState) === true) ||
-      shllow(state, nextState)
-    ) {
+    if (propsAreEqualFn?.(state, nextState) || shllow(state, nextState)) {
       return
     }
     const prevState = state
     state = nextState
-    if (plugins.shouldUpdate.some((fn) => fn(nextState) === false)) {
+    if (shouldUpdateFn && !shouldUpdateFn(nextState)) {
       return
     }
     listeners.forEach((fn) => fn(prevState, state))
-    for (const afterUpdate of plugins.afterUpdate) {
-      afterUpdate(nextState)
-    }
+    afterUpdateFn?.(nextState)
   }
   ;(state as any).$set = set
   for (const key in state) {
@@ -66,9 +53,23 @@ export function createStoreFactory<T extends BaseState, S, P>(
     afterUpdate,
   }: TPlugin) => {
     setup?.(state)
-    propsAreEqual && plugins.propsAreEqual.push(propsAreEqual)
-    shouldUpdate && plugins.shouldUpdate.push(shouldUpdate)
-    afterUpdate && plugins.afterUpdate.push(afterUpdate)
+    if (propsAreEqual) {
+      const prePropsAreEqual = propsAreEqualFn
+      propsAreEqualFn = (...args) =>
+        !!(prePropsAreEqual?.(...args) && propsAreEqual?.(...args))
+    }
+    if (shouldUpdate) {
+      const preShouldUpdate = shouldUpdateFn
+      shouldUpdateFn = (...args) =>
+        !!(preShouldUpdate?.(...args) && shouldUpdate?.(...args))
+    }
+    if (afterUpdate) {
+      const preAfterUpdate = afterUpdateFn
+      afterUpdateFn = (...args) => {
+        preAfterUpdate?.(...args)
+        afterUpdate?.(...args)
+      }
+    }
   }
 
   function returnFn(): T
