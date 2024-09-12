@@ -4,31 +4,32 @@
 import { Draft, produce as immerProduce } from 'immer'
 import { useSyncExternalStore } from 'react'
 import type { Plugin, BaseState, Listener } from './types'
-import { assign, shllow } from './utils'
+import { assign, shallow } from './utils'
 
 export function createStoreFactory<T extends BaseState, P>(
   state: T,
   produce: (state: T, param: P) => T,
 ) {
   type TPlugin = Plugin<T>
+  type RequiredPlugin = Required<TPlugin>
   const initialState = state
   const listeners = new Set<Listener<T>>()
-  let propsAreEqualFn: TPlugin['propsAreEqual']
-  let shouldUpdateFn: TPlugin['shouldUpdate']
-  let afterUpdateFn: TPlugin['afterUpdate']
+  const propsAreEqualFn: RequiredPlugin['propsAreEqual'][] = [shallow]
+  const shouldUpdateFn: RequiredPlugin['shouldUpdate'][] = []
+  const afterUpdateFn: RequiredPlugin['afterUpdate'][] = []
 
   const set = (param: P) => {
     const nextState = produce(state, param)
-    if (propsAreEqualFn?.(state, nextState) || shllow(state, nextState)) {
+    if (propsAreEqualFn.some((fn) => fn(state, nextState))) {
       return
     }
     const prevState = state
     state = nextState
-    if (shouldUpdateFn && !shouldUpdateFn(nextState)) {
+    if (shouldUpdateFn.some((fn) => !fn(prevState, state))) {
       return
     }
     listeners.forEach((fn) => fn(prevState, state))
-    afterUpdateFn?.(nextState)
+    afterUpdateFn.forEach((fn) => fn(prevState, state))
   }
   ;(state as any).$set = set
   for (const key in state) {
@@ -53,23 +54,9 @@ export function createStoreFactory<T extends BaseState, P>(
     afterUpdate,
   }: TPlugin) => {
     setup?.(state)
-    if (propsAreEqual) {
-      const prePropsAreEqual = propsAreEqualFn
-      propsAreEqualFn = (...args) =>
-        !!(prePropsAreEqual?.(...args) && propsAreEqual?.(...args))
-    }
-    if (shouldUpdate) {
-      const preShouldUpdate = shouldUpdateFn
-      shouldUpdateFn = (...args) =>
-        !!(preShouldUpdate?.(...args) && shouldUpdate?.(...args))
-    }
-    if (afterUpdate) {
-      const preAfterUpdate = afterUpdateFn
-      afterUpdateFn = (...args) => {
-        preAfterUpdate?.(...args)
-        afterUpdate?.(...args)
-      }
-    }
+    propsAreEqual && propsAreEqualFn.push(propsAreEqual)
+    shouldUpdate && shouldUpdateFn.push(shouldUpdate)
+    afterUpdate && afterUpdateFn.push(afterUpdate)
   }
 
   function returnFn(): T

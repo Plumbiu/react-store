@@ -29,7 +29,7 @@ function persistPlugin<T extends BaseState>(config: PersistConfig): Plugin<T> {
         state[key] = store.data[key]
       }
     },
-    afterUpdate(state) {
+    afterUpdate(_, state) {
       localStorage.setItem(
         key,
         JSON.stringify({

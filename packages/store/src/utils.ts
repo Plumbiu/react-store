@@ -4,7 +4,7 @@ export const assign = <T extends BaseState>(state: T, param: Partial<T>): T =>
   Object.assign({}, state, param)
 
 const is = Object.is
-export const shllow = <T>(source: T, target: T): boolean => {
+export const shallow = <T>(source: T, target: T): boolean => {
   if (is(source, target)) {
     return true
   }

@@ -96,10 +96,18 @@ usePersonStore.$use(persist({ key: 'person', age: 30000 }))
 
 Plugin build with four hooks:
 
-- `setup(state) => void`: init state
-- `propsAreEqual(prevProps, nextProps)`：if return `true`, state will not update and react will not re-render
-- `shouldUpdate(nextProps)`：state has updated, if return `true`, react will not re-render
-- `afterUpdate(nextProps)`: after re-render
+```ts
+export interface Plugin<T> {
+  // init state
+  setup?: (state: T) => void
+  // if return `true`, state will not update and react will not re-render
+  propsAreEqual?: (prevState: T, nextState: T) => boolean
+  // state has updated, if return `true`, react will not re-render
+  shouldUpdate?: (prevState: T, nextState: T) => boolean
+  // after re-render
+  afterUpdate?: (prevState: T, nextState: T) => void
+}
+```
 
 **Simple: only render even numbers**
 

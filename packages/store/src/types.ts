@@ -5,6 +5,6 @@ export type BaseState = Record<string | number | symbol, any>
 export interface Plugin<T> {
   setup?: (state: T) => void
   propsAreEqual?: (prevState: T, nextState: T) => boolean
-  shouldUpdate?: (state: T) => boolean
-  afterUpdate?: (state: T) => void
+  shouldUpdate?: (prevState: T, nextState: T) => boolean
+  afterUpdate?: (prevState: T, nextState: T) => void
 }
