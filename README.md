@@ -133,13 +133,14 @@ export default function App() {
 
 ```ts
 import { createStoreFactory } from '@plumbiu/react-store'
-import { produce } from 'immer'
 
 const createImmerStore = (state) =>
-  createStoreFactory(state, (prevState, cb) => produce(prevState, cb))
+  createStoreFactory(state, (prevState, nextState) =>
+    Object.assign({}, prevState, cnextStateb),
+  )
 ```
 
-For example `createImmerStore` API:
+For example `createImmerStore` API with typescript support:
 
 ```ts
 import { createStoreFactory, type BaseState } from '@plumbiu/react-store'
