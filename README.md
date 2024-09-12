@@ -2,8 +2,6 @@
 
 > Less than 1kb glob state management implement
 
-# Usage
-
 ```tsx
 import { createStore } from '@plumbiu/react-store'
 
@@ -28,7 +26,7 @@ export default function App() {
 }
 ```
 
-## Immer
+# Immer
 
 You can use `createImmerStore` api to reduce the nested structures:
 
@@ -53,7 +51,7 @@ const useImmerStore = createImmerStore({
 })
 ```
 
-## Reading/writing state and reacting to changes outside of React Components
+# Reading/writing state and reacting to changes outside of React Components
 
 Sometimes we need access state outside React Components.
 
@@ -129,4 +127,26 @@ export default function App() {
     </>
   )
 }
+```
+
+# Use `createStoreFactory` api to customize the store method
+
+```ts
+import { createStoreFactory } from '@plumbiu/react-store'
+import { produce } from 'immer'
+
+const createImmerStore = (state) =>
+  createStoreFactory(state, (prevState, cb) => produce(prevState, cb))
+```
+
+For example `createImmerStore` API:
+
+```ts
+import { createStoreFactory, type BaseState } from '@plumbiu/react-store'
+import { produce, type Draft } from 'immer'
+
+type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
+
+const createImmerStore = <T extends BaseState>(state: State<T, $ImmerSet<T>>) =>
+  createStoreFactory<T, (draft: Draft<T>) => void>(state, produce)
 ```

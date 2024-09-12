@@ -6,7 +6,7 @@ import { useSyncExternalStore } from 'react'
 import type { Plugin, BaseState, Listener } from './types'
 import { assign, shllow } from './utils'
 
-export function createStoreFactory<T extends BaseState, S, P>(
+export function createStoreFactory<T extends BaseState, P>(
   state: T,
   produce: (state: T, param: P) => T,
 ) {
@@ -45,7 +45,7 @@ export function createStoreFactory<T extends BaseState, S, P>(
   returnFn.$getState = (selector?: keyof T) =>
     selector ? state[selector] : state
   returnFn.$getInitialState = () => initialState
-  returnFn.$setState = set as S
+  returnFn.$setState = set
   returnFn.$use = ({
     setup,
     propsAreEqual,
@@ -89,13 +89,9 @@ export function createStoreFactory<T extends BaseState, S, P>(
 type $Set<T extends BaseState> = (state: Partial<T>) => void
 type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
 type State<T, S> = T & ThisType<T & { $set: S }>
-export const createStore = <T extends BaseState>(_state: State<T, $Set<T>>) =>
-  createStoreFactory<T, $Set<T>, Partial<T>>(_state, assign)
+export const createStore = <T extends BaseState>(state: State<T, $Set<T>>) =>
+  createStoreFactory<T, Partial<T>>(state, assign)
 
 export const createImmerStore = <T extends BaseState>(
-  _state: State<T, $ImmerSet<T>>,
-) =>
-  createStoreFactory<T, $ImmerSet<T>, (draft: Draft<T>) => void>(
-    _state,
-    immerProduce,
-  )
+  state: State<T, $ImmerSet<T>>,
+) => createStoreFactory<T, (draft: Draft<T>) => void>(state, immerProduce)
