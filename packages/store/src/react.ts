@@ -4,7 +4,7 @@
 import { Draft, produce as immerProduce } from 'immer'
 import { useSyncExternalStore } from 'react'
 import type { Plugin, BaseState, Listener } from './types'
-import { assign, shallow } from './utils'
+import { assign, is } from './utils'
 
 export function createStoreFactory<T extends BaseState, P>(
   state: T,
@@ -14,7 +14,7 @@ export function createStoreFactory<T extends BaseState, P>(
   type RequiredPlugin = Required<TPlugin>
   const initialState = state
   const listeners = new Set<Listener<T>>()
-  const propsAreEqualFn: RequiredPlugin['propsAreEqual'][] = [shallow]
+  const propsAreEqualFn: RequiredPlugin['propsAreEqual'][] = [is]
   const shouldUpdateFn: RequiredPlugin['shouldUpdate'][] = []
   const afterUpdateFn: RequiredPlugin['afterUpdate'][] = []
 
