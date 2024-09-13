@@ -25,7 +25,6 @@ function Child() {
 
 export default function Basic() {
   const name = usePersonStore('name')
-  console.log('re-render')
   return (
     <>
       <div>name: {name}</div>

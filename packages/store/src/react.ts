@@ -31,13 +31,16 @@ export function createStoreFactory<T extends BaseState, P>(
       afterUpdateFn.forEach(loopCallback)
     }
   }
-  ;(state as any).$set = set
-  for (const key in state) {
-    let fn = state[key]
-    if (typeof fn === 'function') {
-      ;(state[key] as any) = (...args: any[]) => fn.apply(state, args)
+  // Put loop in next microtask
+  Promise.resolve().then(() => {
+    ;(state as any).$set = set
+    for (const key in state) {
+      let fn = state[key]
+      if (typeof fn === 'function') {
+        ;(state[key] as any) = (...args: any[]) => fn.apply(state, args)
+      }
     }
-  }
+  })
 
   returnFn.$subscribe = (listener: Listener<T>) => {
     listeners.add(listener)

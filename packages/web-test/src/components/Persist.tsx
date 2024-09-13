@@ -15,8 +15,6 @@ usePersonStore.$use(persist({ key: 'person' }))
 
 function Child() {
   const data = usePersonStore()
-  console.log(data.age)
-
   return (
     <>
       <div>age: {data.age}</div>
@@ -29,7 +27,6 @@ function Child() {
 
 export default function Persist() {
   const name = usePersonStore('name')
-  console.log('re-render')
   return (
     <>
       <div>name: {name}</div>

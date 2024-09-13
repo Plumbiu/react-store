@@ -27,7 +27,6 @@ function Child() {
 
 export default function Listener() {
   const name = usePersonStore('name')
-  console.log('re-render')
   return (
     <>
       <div>name: {name}</div>
