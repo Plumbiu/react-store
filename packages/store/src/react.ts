@@ -25,11 +25,11 @@ export function createStoreFactory<T extends BaseState, P>(
     }
     const prevState = state
     state = nextState
-    if (shouldUpdateFn.some((fn) => !fn(prevState, state))) {
-      return
+    const loopCallback = (fn: Function) => fn(prevState, nextState)
+    if (shouldUpdateFn.every(loopCallback)) {
+      listeners.forEach(loopCallback)
+      afterUpdateFn.forEach(loopCallback)
     }
-    listeners.forEach((fn) => fn(prevState, state))
-    afterUpdateFn.forEach((fn) => fn(prevState, state))
   }
   ;(state as any).$set = set
   for (const key in state) {
