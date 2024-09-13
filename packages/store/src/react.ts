@@ -17,22 +17,25 @@ export function createStoreFactory<T extends BaseState, P>(
   const propsAreEqualFn: RequiredPlugin['propsAreEqual'][] = [is]
   const shouldUpdateFn: RequiredPlugin['shouldUpdate'][] = []
   const afterUpdateFn: RequiredPlugin['afterUpdate'][] = []
+  const loopCallback = (fn: Function) => fn(prevState, state)
 
-  const set = (param: P) => {
-    const nextState = produce(state, param)
-    if (propsAreEqualFn.some((fn) => fn(state, nextState))) {
-      return
-    }
-    const prevState = state
-    state = nextState
-    const loopCallback = (fn: Function) => fn(prevState, nextState)
-    if (shouldUpdateFn.every(loopCallback)) {
-      listeners.forEach(loopCallback)
-      afterUpdateFn.forEach(loopCallback)
-    }
-  }
+  let prevState = state
+  const emitChanges = () => listeners.forEach(loopCallback)
+
   // Put loop in next microtask
   Promise.resolve().then(() => {
+    const set = (param: P) => {
+      const nextState = produce(state, param)
+      if (propsAreEqualFn.some((fn) => fn(state, nextState))) {
+        return
+      }
+      prevState = state
+      state = nextState
+      if (shouldUpdateFn.every(loopCallback)) {
+        emitChanges()
+        afterUpdateFn.forEach(loopCallback)
+      }
+    }
     ;(state as any).$set = set
     for (const key in state) {
       let fn = state[key]
@@ -49,7 +52,6 @@ export function createStoreFactory<T extends BaseState, P>(
   returnFn.$getState = (selector?: keyof T) =>
     selector ? state[selector] : state
   returnFn.$getInitialState = () => initialState
-  returnFn.$setState = set
   returnFn.$use = ({
     setup,
     propsAreEqual,
@@ -61,6 +63,8 @@ export function createStoreFactory<T extends BaseState, P>(
     shouldUpdate && shouldUpdateFn.push(shouldUpdate)
     afterUpdate && afterUpdateFn.push(afterUpdate)
   }
+  returnFn.$setState = (param: Partial<T>) => assign(state, param)
+  returnFn.$update = emitChanges
 
   function returnFn(): T
   function returnFn<K extends keyof T>(selector: K): T[K]
