@@ -94,47 +94,41 @@ usePersonStore.$use(persist({ key: 'person', age: 30000 }))
 
 ## Custom plugin
 
-Plugin build with four hooks:
-
 ```ts
 export interface Plugin<T> {
   // init state
   setup?: (state: T) => void
-  // if return `true`, state will not update and react will not re-render
-  propsAreEqual?: (prevState: T, nextState: T) => boolean
-  // state has updated, if return `true`, react will not re-render
-  shouldUpdate?: (prevState: T, nextState: T) => boolean
   // after re-render
   afterUpdate?: (prevState: T, nextState: T) => void
 }
 ```
 
-**Simple: only render even numbers**
+**Simple persist**
 
-```tsx
-import { createStore } from '@plumbiu/react-store'
-const useNumStore = createStore({
-  num: 2,
-  inc() {
-    this.$set({ num: this.num + 1 })
+```js
+const store = createStore({
+  age: '18',
+  changeName() {
+    this.$set({ age: this.age + 1 })
   },
 })
 
-useNumStore.$use({
-  shouldUpdate({ num }) {
-    return num % 2 === 0
+const KEY = 'custom-plugin'
+store.$use({
+  setup(state) {
+    const localStore = localStore.getItem(KEY)
+    if (store === null) {
+      return
+    }
+    const data = JSON.parse(localStore)
+    for (const key in data) {
+      state[key] = data[key]
+    }
+  },
+  afterUpdate(_, nextState) {
+    localStorage.setItem(KEY, JSON.stringify(nextState))
   },
 })
-
-export default function App() {
-  const data = useNumStore()
-  return (
-    <>
-      <div>name: {data.num}</div>
-      <button onClick={data.inc}>inc</button>
-    </>
-  )
-}
 ```
 
 # Use `createStoreFactory` api to customize the store method

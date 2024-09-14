@@ -96,36 +96,14 @@ usePersonStore.$use(persist({ key: 'person', age: 30000 }))
 
 Plugin build with four hooks:
 
-- `setup(state) => void`: init state
-- `propsAreEqual(prevProps, nextProps)`：if return `true`, state will not update and react will not re-render
-- `shouldUpdate(nextProps)`：state has updated, if return `true`, react will not re-render
-- `afterUpdate(nextProps)`: after re-render
-
-**Simple: only render even numbers**
-
-```tsx
-import { createStore } from '@plumbiu/react-store'
-const useNumStore = createStore({
-  num: 2,
-  inc() {
-    this.$set({ num: this.num + 1 })
-  },
-})
-
-useNumStore.$use({
-  shouldUpdate({ num }) {
-    return num % 2 === 0
-  },
-})
-
-export default function App() {
-  const data = useNumStore()
-  return (
-    <>
-      <div>name: {data.num}</div>
-      <button onClick={data.inc}>inc</button>
-    </>
-  )
+```ts
+export interface Plugin<T> {
+  // init state
+  setup?: (state: T) => void
+  // if return `true`, state will not update and react will not re-render
+  propsAreEqual?: (prevState: T, nextState: T) => boolean
+  // after re-render
+  afterUpdate?: (prevState: T, nextState: T) => void
 }
 ```
 
