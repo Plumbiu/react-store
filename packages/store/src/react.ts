@@ -1,3 +1,4 @@
+/* eslint-disable @stylistic/semi-style */
 /* eslint-disable @stylistic/no-confusing-arrow */
 import { Draft, produce as immerProduce } from 'immer'
 import { useSyncExternalStore } from 'react'
@@ -20,9 +21,9 @@ export function createStoreFactory<T extends BaseState, P>(
   const loopCallback = (fn: Function) => fn(prevState, state)
   const emitChanges = () => listeners.forEach(loopCallback)
 
-  // Put loop in next microtask
+  // Put loop in microtask
   Promise.resolve().then(() => {
-    function set(param: P) {
+    const set = (param: P) => {
       const nextState = produce(state, param)
       if (is(state, nextState)) {
         return
@@ -69,9 +70,7 @@ export function createStoreFactory<T extends BaseState, P>(
   return returnFn
 }
 
-type $Set<T extends BaseState> = {
-  (state: Partial<T>): void
-}
+type $Set<T extends BaseState> = (state: Partial<T>) => void
 type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
 type State<T, S> = T & ThisType<T & { $set: S }>
 export const createStore = <T extends BaseState>(state: State<T, $Set<T>>) =>

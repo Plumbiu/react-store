@@ -94,17 +94,41 @@ usePersonStore.$use(persist({ key: 'person', age: 30000 }))
 
 ## Custom plugin
 
-Plugin build with four hooks:
-
 ```ts
 export interface Plugin<T> {
   // init state
   setup?: (state: T) => void
-  // if return `true`, state will not update and react will not re-render
-  propsAreEqual?: (prevState: T, nextState: T) => boolean
   // after re-render
   afterUpdate?: (prevState: T, nextState: T) => void
 }
+```
+
+**Simple persist**
+
+```js
+const store = createStore({
+  age: '18',
+  changeName() {
+    this.$set({ age: this.age + 1 })
+  },
+})
+
+const KEY = 'custom-plugin'
+store.$use({
+  setup(state) {
+    const localStore = localStore.getItem(KEY)
+    if (store === null) {
+      return
+    }
+    const data = JSON.parse(localStore)
+    for (const key in data) {
+      state[key] = data[key]
+    }
+  },
+  afterUpdate(_, nextState) {
+    localStorage.setItem(KEY, JSON.stringify(nextState))
+  },
+})
 ```
 
 # Use `createStoreFactory` api to customize the store method
