@@ -1,28 +1,27 @@
 import { createStore, save, SaveThisType } from '@plumbiu/react-store'
+import { useEffect } from 'react'
 
-interface Info {
-  name: string
-  age: number
-  changeAge: (age: number) => void
-  changeName: () => void
-  save: (point: string) => void
-  back: (point: string) => void
+interface Data {
+  value: string
+  setValue: (value: string) => void
+  save: () => void
+  back: () => void
 }
 
-const usePersonStore = createStore<Info, SaveThisType>({
-  age: 21,
-  name: 'foo',
-  changeAge(age: number) {
-    this.$set({ age })
+const SOME_POINT = 'some-point'
+
+const usePersonStore = createStore<Data, SaveThisType>({
+  value: '',
+  setValue(value) {
+    this.$set({ value })
   },
-  changeName() {
-    this.$set({ name: this.name + '-' })
+  save() {
+    this.$save(SOME_POINT)
   },
-  save(point: string) {
-    this.$save(point)
-  },
-  back(point: string) {
-    this.$back(point)
+  back() {
+    console.log('back')
+
+    this.$back(SOME_POINT)
   },
 })
 
@@ -30,23 +29,32 @@ usePersonStore.$use(save())
 
 function Child() {
   const data = usePersonStore()
+  useEffect(() => {
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'KeyZ') {
+        data.back()
+      }
+    })
+  }, [])
   return (
-    <>
-      <div>age: {data.age}</div>
-      <div>name: {data.name}</div>
-      <button onClick={() => data.changeAge(data.age + 1)}>change age</button>
-      <button onClick={data.changeName}>change name</button>
-      <button onClick={() => data.save('some-point')}>save</button>
-      <button onClick={() => data.back('some-point')}>back</button>
-    </>
+    <input
+      value={data.value}
+      onChange={(e) => {
+        const value = e.target.value
+        if (value.length % 6 === 0) {
+          data.save()
+        }
+        data.setValue(value)
+      }}
+    />
   )
 }
 
 export default function Save() {
-  const name = usePersonStore('name')
+  const value = usePersonStore('value')
   return (
     <>
-      <div>name: {name}</div>
+      <div>nvalueame: {value}</div>
       <h4>Child</h4>
       <Child />
     </>

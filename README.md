@@ -74,22 +74,78 @@ unsub()
 
 ## persit
 
+Cache data in localStorage:
+
 ```js
-const usePersonStore = createStore(
-  {
-    age: 21,
-    name: 'foo',
-    async changeAge(age: number) {
-      this.$set({ age })
-    },
-    changeName() {
-      this.$set({ name: this.name + '-' })
-    },
+const usePersonStore = createStore({
+  age: 21,
+  name: 'foo',
+  async changeAge(age: number) {
+    this.$set({ age })
   },
-  ,
-)
+  changeName() {
+    this.$set({ name: this.name + '-' })
+  },
+})
 // key for localStorage
 usePersonStore.$use(persist({ key: 'person', age: 30000 }))
+```
+
+## save
+
+This is useful for some scenarios where you need to withdraw, such as withdrawing text in an input box.
+
+```tsx
+import { createStore, save } from '@plumbiu/react-store'
+import { useEffect } from 'react'
+
+interface Data {
+  value: string
+  save: () => void
+  back: () => void
+}
+
+interface ExternalThisType {
+  $save: (point: string) => void
+  $back: (point: string) => void
+}
+
+const SOME_POINT = 'some-point'
+
+const useInputStore = createStore<Data, ExternalThisType>({
+  value: '',
+  save(point) {
+    this.$save(point)
+  },
+  back(point) {
+    this.$back(point)
+  },
+})
+
+useInputStore.$use(save())
+
+function App() {
+  const data = useInputStore()
+  useEffect(() => {
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'KeyZ') {
+        data.back()
+      }
+    })
+  }, [])
+  return (
+    <input
+      value={data.value}
+      onChange={(e) => {
+        const value = e.target.value
+        if (value.length % 6 === 0) {
+          data.save()
+        }
+        data.setValue(value)
+      }}
+    />
+  )
+}
 ```
 
 ## Custom plugin
