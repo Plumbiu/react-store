@@ -1,5 +1,6 @@
 import { createStore, save, SaveThisType } from '@plumbiu/react-store'
 import { useEffect } from 'react'
+import hotkeys from 'hotkeys-js'
 
 interface Data {
   value: string
@@ -19,8 +20,6 @@ const usePersonStore = createStore<Data, SaveThisType>({
     this.$save(SOME_POINT)
   },
   back() {
-    console.log('back')
-
     this.$back(SOME_POINT)
   },
 })
@@ -30,23 +29,11 @@ usePersonStore.$use(save())
 function Child() {
   const data = usePersonStore()
   useEffect(() => {
-    window.addEventListener('keyup', (e) => {
-      if (e.code === 'KeyZ') {
-        data.back()
-      }
-    })
+    hotkeys('alt+z', data.back)
+    hotkeys('alt+s', data.save) // ctrl+s will trigger Chrome modal
   }, [])
   return (
-    <input
-      value={data.value}
-      onChange={(e) => {
-        const value = e.target.value
-        if (value.length % 6 === 0) {
-          data.save()
-        }
-        data.setValue(value)
-      }}
-    />
+    <input value={data.value} onChange={(e) => data.setValue(e.target.value)} />
   )
 }
 
@@ -54,7 +41,7 @@ export default function Save() {
   const value = usePersonStore('value')
   return (
     <>
-      <div>nvalueame: {value}</div>
+      <div>value: {value}</div>
       <h4>Child</h4>
       <Child />
     </>

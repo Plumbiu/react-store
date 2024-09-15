@@ -96,54 +96,40 @@ usePersonStore.$use(persist({ key: 'person', age: 30000 }))
 This is useful for some scenarios where you need to withdraw, such as withdrawing text in an input box.
 
 ```tsx
-import { createStore, save } from '@plumbiu/react-store'
+import { createStore, save, SaveThisType } from '@plumbiu/react-store'
 import { useEffect } from 'react'
+import hotkeys from 'hotkeys-js'
 
 interface Data {
   value: string
+  setValue: (value: string) => void
   save: () => void
   back: () => void
 }
-
-interface ExternalThisType {
-  $save: (point: string) => void
-  $back: (point: string) => void
-}
-
 const SOME_POINT = 'some-point'
-
-const useInputStore = createStore<Data, ExternalThisType>({
+const usePersonStore = createStore<Data, SaveThisType>({
   value: '',
-  save(point) {
-    this.$save(point)
+  setValue(value) {
+    this.$set({ value })
   },
-  back(point) {
-    this.$back(point)
+  save() {
+    this.$save(SOME_POINT)
+  },
+  back() {
+    this.$back(SOME_POINT)
   },
 })
 
-useInputStore.$use(save())
+usePersonStore.$use(save())
 
 function App() {
-  const data = useInputStore()
+  const data = usePersonStore()
   useEffect(() => {
-    window.addEventListener('keyup', (e) => {
-      if (e.code === 'KeyZ') {
-        data.back()
-      }
-    })
+    hotkeys('alt+z', data.back)
+    hotkeys('alt+s', data.save) // ctrl+s will trigger Chrome modal
   }, [])
   return (
-    <input
-      value={data.value}
-      onChange={(e) => {
-        const value = e.target.value
-        if (value.length % 6 === 0) {
-          data.save()
-        }
-        data.setValue(value)
-      }}
-    />
+    <input value={data.value} onChange={(e) => data.setValue(e.target.value)} />
   )
 }
 ```
