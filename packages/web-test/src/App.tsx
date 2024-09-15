@@ -3,12 +3,14 @@ import Basic from './components/Basic'
 import Immer from './components/Immer'
 import Persit from './components/Persist'
 import Listener from './components/Listener'
+import Save from './components/Save'
 
 const components = {
   basic: <Basic />,
   immer: <Immer />,
   persit: <Persit />,
   listener: <Listener />,
+  save: <Save />,
 }
 
 export default function App() {
