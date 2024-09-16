@@ -1,4 +1,5 @@
-import { createStore, save } from '@plumbiu/react-store'
+import { createStore } from '@plumbiu/react-store'
+import { save } from '@plumbiu/react-store/plugins'
 import { useEffect } from 'react'
 import hotkeys from 'hotkeys-js'
 

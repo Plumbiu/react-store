@@ -1,4 +1,5 @@
-import { createStore, persist } from '@plumbiu/react-store'
+import { createStore } from '@plumbiu/react-store'
+import { persist } from '@plumbiu/react-store/plugins'
 
 const usePersonStore = createStore({
   age: 21,

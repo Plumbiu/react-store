@@ -77,6 +77,9 @@ unsub()
 Cache data in localStorage:
 
 ```js
+import { createStore } from '@plumbiu/react-store'
+import { persist } from '@plumbiu/react-store/plugins'
+
 const usePersonStore = createStore({
   age: 21,
   name: 'foo',
@@ -96,7 +99,8 @@ usePersonStore.$use(persist({ key: 'person', age: 30000 }))
 This is useful for some scenarios where you need to withdraw, such as withdrawing text in an input box.
 
 ```tsx
-import { createStore, save, SaveThisType } from '@plumbiu/react-store'
+import { createStore } from '@plumbiu/react-store'
+import { save } from '@plumbiu/react-store/plugins'
 import { useEffect } from 'react'
 import hotkeys from 'hotkeys-js'
 
@@ -105,12 +109,13 @@ interface Data {
   setValue: (value: string) => void
   save: () => void
   back: () => void
+  // Properties starting with $ are considered ThisType
   $save: (point: string) => void
   $back: (point: string) => void
 }
 
 const SOME_POINT = 'some-point'
-const usePersonStore = createStore<Data>({
+const useInputStore = createStore<Data>({
   value: '',
   setValue(value) {
     this.$set({ value })
@@ -122,10 +127,11 @@ const usePersonStore = createStore<Data>({
     this.$back(SOME_POINT)
   },
 })
-usePersonStore.$use(save())
+
+useInputStore.$use(save())
 
 function App() {
-  const data = usePersonStore()
+  const data = useInputStore()
   useEffect(() => {
     hotkeys('alt+z', data.back)
     hotkeys('alt+s', data.save) // ctrl+s will trigger Chrome modal

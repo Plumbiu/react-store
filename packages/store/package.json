@@ -22,6 +22,16 @@
         "default": "./dist/index.js",
         "types": "./dist/index.d.ts"
       }
+    },
+    "./plugins": {
+      "import": {
+        "default": "./dist/plugins/index.mjs",
+        "types": "./dist/plugins/index.d.mts"
+      },
+      "require": {
+        "default": "./dist/plugins/index.js",
+        "types": "./dist/plugins/index.d.ts"
+      }
     }
   },
   "repository": {

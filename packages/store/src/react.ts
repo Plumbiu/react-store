@@ -10,18 +10,16 @@ import { CollectThisType } from './type-utils'
 export function createStoreFactory<T extends CollectThisType<BaseState>, P>(
   state: T,
   produce: (state: T, param: P) => T,
+  plugins: Plugin<T>[] = [],
 ) {
   type TPlugin = Plugin<T>
-  type RequiredPlugin = Required<TPlugin>
   type StateKeys = keyof T
   type StateListener = Listener<T>
 
   const initialState = state
   const listeners = new Set<StateListener>()
-  const afterUpdateFn: RequiredPlugin['afterUpdate'][] = []
   let prevState = state
-  const loopCallback = (fn: Function) => fn(prevState, state)
-  const emitChanges = () => listeners.forEach(loopCallback)
+  const emitChanges = () => listeners.forEach((fn) => fn(prevState, state))
   const baseSet: BaseSet = (nextState: T, isEqual = is) => {
     if (isEqual(state, nextState)) {
       return
@@ -29,13 +27,15 @@ export function createStoreFactory<T extends CollectThisType<BaseState>, P>(
     prevState = state
     state = nextState
     emitChanges()
-    afterUpdateFn.forEach(loopCallback)
+    plugins.forEach(({ afterUpdate }) => afterUpdate?.(prevState, state))
   }
-
+  const setupOperation = { setState: baseSet, getState: () => state }
   // Put loop in microtask
   Promise.resolve().then(() => {
-    const set = (param: P) => baseSet(produce(state, param))
-    ;(state as any).$set = set
+    ;(state as any).$set = (param: P) => baseSet(produce(state, param))
+    for (const { setup } of plugins) {
+      setup?.(state, setupOperation)
+    }
     for (const key in state) {
       let fn = state[key]
       if (typeof fn === 'function') {
@@ -52,8 +52,8 @@ export function createStoreFactory<T extends CollectThisType<BaseState>, P>(
     selector ? state[selector] : state
   returnFn.$getInitialState = () => initialState
   returnFn.$use = ({ setup, afterUpdate }: TPlugin) => {
-    setup?.(state, { setState: baseSet, getState: () => state })
-    afterUpdate && afterUpdateFn.push(afterUpdate)
+    setup?.(state, setupOperation)
+    afterUpdate && plugins.push({ afterUpdate })
   }
   returnFn.$setState = (param: Partial<T>) => assign(state, param)
   returnFn.$render = emitChanges
