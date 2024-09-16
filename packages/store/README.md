@@ -142,6 +142,33 @@ function App() {
 }
 ```
 
+## Global Plugin
+
+If you think it is troublesome to use the `$use` method to add plugins to `createStore` every time, you can create a custom createStore using a factory function.
+
+For example, this `save` plugin:
+
+```ts
+import { createStoreFactory } from '@plumbiu/react-store'
+import { save, type SaveThisType } from '@plumbiu/react-store/plugins'
+
+// Generics added in ThisType
+const createStore = createStoreFactory<SaveThisType>([save()])
+const SOME_POINT = 'some-point'
+const useInputStore = createStore({
+  value: '',
+  setValue(value: string) {
+    this.$set({ value })
+  },
+  save() {
+    this.$save(SOME_POINT)
+  },
+  back() {
+    this.$back(SOME_POINT)
+  },
+})
+```
+
 ## Custom plugin
 
 ```ts
@@ -179,27 +206,4 @@ store.$use({
     localStorage.setItem(KEY, JSON.stringify(nextState))
   },
 })
-```
-
-# Use `createStoreFactory` api to customize the store method
-
-```ts
-import { createStoreFactory } from '@plumbiu/react-store'
-
-const createImmerStore = (state) =>
-  createStoreFactory(state, (prevState, nextState) =>
-    Object.assign({}, prevState, cnextStateb),
-  )
-```
-
-For example `createImmerStore` API with typescript support:
-
-```ts
-import { createStoreFactory, type BaseState } from '@plumbiu/react-store'
-import { produce, type Draft } from 'immer'
-
-type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
-
-const createImmerStore = <T extends BaseState>(state: State<T, $ImmerSet<T>>) =>
-  createStoreFactory<T, (draft: Draft<T>) => void>(state, produce)
 ```

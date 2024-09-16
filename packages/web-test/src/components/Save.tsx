@@ -1,22 +1,14 @@
-import { createStore } from '@plumbiu/react-store'
-import { save } from '@plumbiu/react-store/plugins'
+import { createStoreFactory } from '@plumbiu/react-store'
+import { save, type SaveThisType } from '@plumbiu/react-store/plugins'
 import { useEffect } from 'react'
 import hotkeys from 'hotkeys-js'
 
-interface Data {
-  value: string
-  setValue: (value: string) => void
-  save: () => void
-  back: () => void
-  $save: (point: string) => void
-  $back: (point: string) => void
-}
-
+// Generics added in ThisType
+const createStore = createStoreFactory<SaveThisType>([save()])
 const SOME_POINT = 'some-point'
-
-const usePersonStore = createStore<Data>({
+const useInputStore = createStore({
   value: '',
-  setValue(value) {
+  setValue(value: string) {
     this.$set({ value })
   },
   save() {
@@ -26,11 +18,8 @@ const usePersonStore = createStore<Data>({
     this.$back(SOME_POINT)
   },
 })
-
-usePersonStore.$use(save())
-
 function Child() {
-  const data = usePersonStore()
+  const data = useInputStore()
   useEffect(() => {
     hotkeys('alt+z', data.back)
     hotkeys('alt+s', data.save) // ctrl+s will trigger Chrome modal
@@ -41,7 +30,7 @@ function Child() {
 }
 
 export default function Save() {
-  const value = usePersonStore('value')
+  const value = useInputStore('value')
   return (
     <>
       <div>value: {value}</div>

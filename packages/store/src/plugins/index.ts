@@ -1,2 +1,2 @@
 export { default as persist } from './persist'
-export { default as save } from './save'
+export { default as save, type SaveThisType } from './save'

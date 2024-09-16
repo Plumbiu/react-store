@@ -7,7 +7,9 @@ import type { Plugin, BaseState, Listener, BaseSet } from './types'
 import { assign, is } from './utils'
 import { CollectThisType } from './type-utils'
 
-export function createStoreFactory<T extends CollectThisType<BaseState>, P>(
+type CollectThisStateType = CollectThisType<BaseState>
+
+function createStoreImpl<T extends CollectThisStateType, P>(
   state: T,
   produce: (state: T, param: P) => T,
   plugins: Plugin<T>[] = [],
@@ -75,13 +77,16 @@ export function createStoreFactory<T extends CollectThisType<BaseState>, P>(
 type $Set<T extends BaseState> = (state: Partial<T>) => void
 type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
 type State<T extends BaseState, S> = CollectThisType<T & { $set: S }>
+
+export const createStoreFactory =
+  <This extends BaseState>(plugins?: Plugin<any>[]) =>
+  <S extends BaseState>(state: ThisType<This & { $set: $Set<S> } & S> & S) =>
+    createStoreImpl<typeof state, Partial<S>>(state, assign, plugins)
+
 export const createStore = <T extends BaseState>(state: State<T, $Set<T>>) =>
-  createStoreFactory<typeof state, Partial<T>>(state, assign)
+  createStoreImpl<typeof state, Partial<T>>(state, assign)
 
 export const createImmerStore = <T extends BaseState>(
   state: State<T, $ImmerSet<T>>,
 ) =>
-  createStoreFactory<typeof state, (draft: Draft<T>) => void>(
-    state,
-    immerProduce,
-  )
+  createStoreImpl<typeof state, (draft: Draft<T>) => void>(state, immerProduce)
