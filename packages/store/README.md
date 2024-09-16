@@ -105,9 +105,12 @@ interface Data {
   setValue: (value: string) => void
   save: () => void
   back: () => void
+  $save: (point: string) => void
+  $back: (point: string) => void
 }
+
 const SOME_POINT = 'some-point'
-const usePersonStore = createStore<Data, SaveThisType>({
+const usePersonStore = createStore<Data>({
   value: '',
   setValue(value) {
     this.$set({ value })
@@ -119,7 +122,6 @@ const usePersonStore = createStore<Data, SaveThisType>({
     this.$back(SOME_POINT)
   },
 })
-
 usePersonStore.$use(save())
 
 function App() {

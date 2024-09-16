@@ -1,4 +1,4 @@
-import { createStore, save, SaveThisType } from '@plumbiu/react-store'
+import { createStore, save } from '@plumbiu/react-store'
 import { useEffect } from 'react'
 import hotkeys from 'hotkeys-js'
 
@@ -7,11 +7,13 @@ interface Data {
   setValue: (value: string) => void
   save: () => void
   back: () => void
+  $save: (point: string) => void
+  $back: (point: string) => void
 }
 
 const SOME_POINT = 'some-point'
 
-const usePersonStore = createStore<Data, SaveThisType>({
+const usePersonStore = createStore<Data>({
   value: '',
   setValue(value) {
     this.$set({ value })

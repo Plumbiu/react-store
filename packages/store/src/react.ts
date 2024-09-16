@@ -1,11 +1,13 @@
+/* eslint-disable @stylistic/indent */
 /* eslint-disable @stylistic/semi-style */
 /* eslint-disable @stylistic/no-confusing-arrow */
 import { Draft, produce as immerProduce } from 'immer'
 import { useSyncExternalStore } from 'react'
 import type { Plugin, BaseState, Listener, BaseSet } from './types'
 import { assign, is } from './utils'
+import { CollectThisType } from './type-utils'
 
-export function createStoreFactory<T extends BaseState, P>(
+export function createStoreFactory<T extends CollectThisType<BaseState>, P>(
   state: T,
   produce: (state: T, param: P) => T,
 ) {
@@ -72,11 +74,14 @@ export function createStoreFactory<T extends BaseState, P>(
 
 type $Set<T extends BaseState> = (state: Partial<T>) => void
 type $ImmerSet<T extends BaseState> = (cb: (draft: Draft<T>) => void) => void
-type State<T, S, This = T> = T & ThisType<T & This & { $set: S }>
-export const createStore = <T extends BaseState, This = T>(
-  state: State<T, $Set<T>, This>,
-) => createStoreFactory<T, Partial<T>>(state, assign)
+type State<T extends BaseState, S> = CollectThisType<T & { $set: S }>
+export const createStore = <T extends BaseState>(state: State<T, $Set<T>>) =>
+  createStoreFactory<typeof state, Partial<T>>(state, assign)
 
-export const createImmerStore = <T extends BaseState, This = T>(
-  state: State<T, $ImmerSet<T>, This>,
-) => createStoreFactory<T, (draft: Draft<T>) => void>(state, immerProduce)
+export const createImmerStore = <T extends BaseState>(
+  state: State<T, $ImmerSet<T>>,
+) =>
+  createStoreFactory<typeof state, (draft: Draft<T>) => void>(
+    state,
+    immerProduce,
+  )
