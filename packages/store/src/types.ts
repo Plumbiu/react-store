@@ -18,3 +18,11 @@ export interface Plugin<T> {
   ) => void
   afterUpdate?: (prevState: T, nextState: T) => void
 }
+
+export type CollectThisType<T extends BaseState> = Pick<
+  T,
+  {
+    [key in keyof T]: T[key] extends `$${string}` ? never : T[key]
+  }[keyof T]
+> &
+  ThisType<T>

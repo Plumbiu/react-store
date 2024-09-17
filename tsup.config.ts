@@ -1,3 +1,4 @@
+import fsp from 'node:fs/promises'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
@@ -11,4 +12,16 @@ export default defineConfig({
   minify: 'terser',
   dts: true,
   external: ['react', 'immer'],
+  plugins: [
+    {
+      name: 'remove-type-files',
+      buildEnd({ writtenFiles }) {
+        writtenFiles.forEach(async ({ name, size }) => {
+          if (size === 0 || (name.endsWith('.js') && size <= 13)) {
+            await fsp.rm(name)
+          }
+        })
+      },
+    },
+  ],
 })

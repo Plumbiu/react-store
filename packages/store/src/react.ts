@@ -3,9 +3,14 @@
 /* eslint-disable @stylistic/no-confusing-arrow */
 import { Draft, produce as immerProduce } from 'immer'
 import { useSyncExternalStore } from 'react'
-import type { Plugin, BaseState, Listener, BaseSet } from './types'
+import type {
+  Plugin,
+  BaseState,
+  Listener,
+  BaseSet,
+  CollectThisType,
+} from './types'
 import { assign, is } from './utils'
-import { CollectThisType } from './type-utils'
 
 type CollectThisStateType = CollectThisType<BaseState>
 
