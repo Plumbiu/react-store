@@ -1,6 +1,6 @@
 import { createStoreFactory } from '@plumbiu/react-store'
 import { save, type SaveThisType } from '@plumbiu/react-store/plugins'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import hotkeys from 'hotkeys-js'
 
 // Generics added in ThisType
@@ -20,12 +20,26 @@ const useInputStore = createStore({
 })
 function Child() {
   const data = useInputStore()
+  const start = useRef(Date.now())
   useEffect(() => {
     hotkeys('alt+z', data.back)
-    hotkeys('alt+s', data.save) // ctrl+s will trigger Chrome modal
   }, [])
   return (
-    <input value={data.value} onChange={(e) => data.setValue(e.target.value)} />
+    <input
+      value={data.value}
+      onBlur={() => {
+        start.current = Date.now()
+        data.save()
+      }}
+      onChange={(e) => {
+        const now = Date.now()
+        if (now - start.current > 200) {
+          start.current = now
+          data.save()
+        }
+        data.setValue(e.target.value)
+      }}
+    />
   )
 }
 

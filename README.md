@@ -132,12 +132,26 @@ useInputStore.$use(save())
 
 function App() {
   const data = useInputStore()
+  const start = useRef(Date.now())
   useEffect(() => {
     hotkeys('alt+z', data.back)
-    hotkeys('alt+s', data.save) // ctrl+s will trigger Chrome modal
   }, [])
   return (
-    <input value={data.value} onChange={(e) => data.setValue(e.target.value)} />
+    <input
+      value={data.value}
+      onBlur={() => {
+        start.current = Date.now()
+        data.save()
+      }}
+      onChange={(e) => {
+        const now = Date.now()
+        if (now - start.current > 200) {
+          start.current = now
+          data.save()
+        }
+        data.setValue(e.target.value)
+      }}
+    />
   )
 }
 ```
