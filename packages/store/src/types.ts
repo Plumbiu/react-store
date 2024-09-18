@@ -11,7 +11,7 @@ export type BaseSet = <T extends BaseState>(
 export interface Plugin<T> {
   setup?: (
     state: T,
-    operation: {
+    actions: {
       setState: BaseSet
       getState: () => T
     },
