@@ -1,6 +1,6 @@
 {
   "name": "@plumbiu/react-store",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "main": "./dist/index.mjs",
   "description": "Less than 1kb glob state management implement",
   "types": "./dist/index.d.mts",
@@ -15,22 +15,22 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/index.mjs",
-        "types": "./dist/index.d.mts"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
-        "default": "./dist/index.js",
-        "types": "./dist/index.d.ts"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       }
     },
     "./plugins": {
       "import": {
-        "default": "./dist/plugins/index.mjs",
-        "types": "./dist/plugins/index.d.mts"
+        "types": "./dist/plugins/index.d.mts",
+        "default": "./dist/plugins/index.mjs"
       },
       "require": {
-        "default": "./dist/plugins/index.js",
-        "types": "./dist/plugins/index.d.ts"
+        "types": "./dist/plugins/index.d.ts",
+        "default": "./dist/plugins/index.js"
       }
     }
   },
